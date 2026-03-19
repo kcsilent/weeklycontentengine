@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Content Autopilot — 你的 AI 內容助手</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-dark: #0a0a0f;
+  --bg-card: #13131a;
+  --bg-card-hover: #1a1a25;
+  --accent: #f0c040;
+  --accent-glow: rgba(240, 192, 64, 0.15);
+  --accent-dim: #c9a033;
+  --text-primary: #e8e6e1;
+  --text-secondary: #8a8890;
+  --text-muted: #5a5860;
+  --border: #2a2a35;
+  --green: #34d399;
+  --pink: #f472b6;
+  --blue: #60a5fa;
+  --purple: #a78bfa;
+  --gradient-accent: linear-gradient(135deg, #f0c040 0%, #f59e0b 50%, #ef4444 100%);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Noto Sans TC', 'DM Sans', sans-serif;
+  background: var(--bg-dark);
+  color: var(--text-primary);
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+
+/* Grain overlay */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 9999;
+}
+
+.container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+
+/* ═══════════ HERO ═══════════ */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  position: relative;
+  padding: 120px 0 80px;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -200px; right: -300px;
+  width: 800px; height: 800px;
+  background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.hero-content { position: relative; z-index: 1; }
+
+.hero-badge {
+  display: inline-block;
+  padding: 6px 16px;
+  border: 1px solid var(--accent-dim);
+  border-radius: 100px;
+  font-size: 13px;
+  color: var(--accent);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 32px;
+  animation: fadeInUp 0.8s ease;
+}
+
+.hero h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(42px, 7vw, 80px);
+  font-weight: 900;
+  line-height: 1.1;
+  margin-bottom: 24px;
+  animation: fadeInUp 0.8s ease 0.1s both;
+}
+
+.hero h1 .accent {
+  background: var(--gradient-accent);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero p {
+  font-size: 18px;
+  color: var(--text-secondary);
+  max-width: 560px;
+  margin-bottom: 40px;
+  animation: fadeInUp 0.8s ease 0.2s both;
+}
+
+.hero-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 36px;
+  background: var(--accent);
+  color: var(--bg-dark);
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 16px;
+  transition: all 0.3s;
+  animation: fadeInUp 0.8s ease 0.3s both;
+}
+
+.hero-cta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px var(--accent-glow);
+}
+
+.hero-stats {
+  display: flex;
+  gap: 48px;
+  margin-top: 64px;
+  animation: fadeInUp 0.8s ease 0.4s both;
+}
+
+.hero-stat h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 36px;
+  color: var(--accent);
+}
+
+.hero-stat p {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+/* ═══════════ SECTION SHARED ═══════════ */
+section { padding: 100px 0; }
+
+.section-label {
+  font-size: 12px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 16px;
+}
+
+.section-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(28px, 4vw, 42px);
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.section-subtitle {
+  color: var(--text-secondary);
+  font-size: 16px;
+  max-width: 560px;
+  margin-bottom: 48px;
+}
+
+/* ═══════════ HOW IT WORKS ═══════════ */
+.steps-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.step-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 32px;
+  transition: all 0.3s;
+  position: relative;
+}
+
+.step-card:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--accent-dim);
+  transform: translateY(-4px);
+}
+
+.step-number {
+  font-family: 'Playfair Display', serif;
+  font-size: 48px;
+  color: var(--accent);
+  opacity: 0.3;
+  line-height: 1;
+  margin-bottom: 16px;
+}
+
+.step-card h3 {
+  font-size: 18px;
+  margin-bottom: 8px;
+}
+
+.step-card p {
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+/* ═══════════ PRICING ═══════════ */
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.price-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 36px;
+  transition: all 0.3s;
+  position: relative;
+}
+
+.price-card.featured {
+  border-color: var(--accent);
+  box-shadow: 0 0 60px var(--accent-glow);
+}
+
+.price-card.featured::before {
+  content: '最受歡迎';
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--accent);
+  color: var(--bg-dark);
+  padding: 4px 16px;
+  border-radius: 100px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.price-card:hover { transform: translateY(-4px); }
+
+.price-icon { font-size: 32px; margin-bottom: 16px; }
+
+.price-name {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.price-amount {
+  font-family: 'Playfair Display', serif;
+  font-size: 42px;
+  font-weight: 900;
+  color: var(--accent);
+}
+
+.price-amount span { font-size: 16px; color: var(--text-muted); font-family: 'Noto Sans TC', sans-serif; font-weight: 400; }
+
+.price-desc {
+  color: var(--text-secondary);
+  font-size: 14px;
+  margin: 12px 0 24px;
+  min-height: 40px;
+}
+
+.price-features {
+  list-style: none;
+  margin-bottom: 32px;
+}
+
+.price-features li {
+  padding: 8px 0;
+  font-size: 14px;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  gap: 8px;
+}
+
+.price-features li::before {
+  content: '✓';
+  color: var(--green);
+  font-weight: bold;
+}
+
+.price-features li.disabled {
+  opacity: 0.3;
+}
+
+.price-features li.disabled::before {
+  content: '—';
+  color: var(--text-muted);
+}
+
+.price-btn {
+  display: block;
+  width: 100%;
+  padding: 14px;
+  text-align: center;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 15px;
+  transition: all 0.3s;
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  background: transparent;
+}
+
+.price-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.price-card.featured .price-btn {
+  background: var(--accent);
+  color: var(--bg-dark);
+  border: none;
+}
+
+.price-card.featured .price-btn:hover {
+  box-shadow: 0 4px 20px var(--accent-glow);
+}
+
+/* ═══════════ EXAMPLE (auto-update) ═══════════ */
+.example-section { background: var(--bg-card); border-radius: 16px; padding: 48px; margin-top: 48px; border: 1px solid var(--border); }
+
+.example-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+}
+
+.example-tab {
+  padding: 8px 20px;
+  border-radius: 100px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 14px;
+  font-family: 'Noto Sans TC', sans-serif;
+  transition: all 0.3s;
+}
+
+.example-tab.active, .example-tab:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-glow);
+}
+
+.example-content {
+  display: none;
+  animation: fadeIn 0.4s ease;
+}
+
+.example-content.active { display: block; }
+
+.example-card {
+  background: var(--bg-dark);
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 16px;
+  border: 1px solid var(--border);
+}
+
+.example-card h4 {
+  color: var(--accent);
+  font-size: 14px;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.example-card p {
+  color: var(--text-secondary);
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+.example-update-note {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 12px;
+  margin-top: 16px;
+}
+
+/* ═══════════ TESTIMONIALS ═══════════ */
+.testimonial-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.testimonial-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 32px;
+}
+
+.testimonial-stars { color: var(--accent); font-size: 14px; margin-bottom: 16px; letter-spacing: 2px; }
+
+.testimonial-text {
+  color: var(--text-secondary);
+  font-size: 15px;
+  line-height: 1.8;
+  margin-bottom: 20px;
+  font-style: italic;
+}
+
+.testimonial-author {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.testimonial-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--gradient-accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+}
+
+.testimonial-name { font-size: 14px; font-weight: 500; }
+.testimonial-role { font-size: 12px; color: var(--text-muted); }
+
+/* ═══════════ ABOUT ═══════════ */
+.about-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 64px;
+  align-items: center;
+}
+
+.about-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 28px;
+  margin-bottom: 8px;
+}
+
+.about-title {
+  color: var(--accent);
+  font-size: 14px;
+  letter-spacing: 1px;
+  margin-bottom: 24px;
+}
+
+.about-text {
+  color: var(--text-secondary);
+  font-size: 15px;
+  margin-bottom: 16px;
+}
+
+.about-highlights {
+  display: flex;
+  gap: 24px;
+  margin-top: 32px;
+}
+
+.about-highlight {
+  text-align: center;
+}
+
+.about-highlight h4 {
+  font-family: 'Playfair Display', serif;
+  font-size: 28px;
+  color: var(--accent);
+}
+
+.about-highlight p {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* ═══════════ NEWSLETTER ═══════════ */
+.newsletter-section {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 64px;
+  text-align: center;
+  margin-top: 48px;
+}
+
+.newsletter-form {
+  display: flex;
+  gap: 12px;
+  max-width: 480px;
+  margin: 32px auto 0;
+}
+
+.newsletter-input {
+  flex: 1;
+  padding: 14px 20px;
+  background: var(--bg-dark);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text-primary);
+  font-size: 15px;
+  font-family: 'Noto Sans TC', sans-serif;
+  outline: none;
+  transition: border-color 0.3s;
+}
+
+.newsletter-input:focus { border-color: var(--accent); }
+
+.newsletter-btn {
+  padding: 14px 28px;
+  background: var(--accent);
+  color: var(--bg-dark);
+  border: none;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+  font-family: 'Noto Sans TC', sans-serif;
+  transition: all 0.3s;
+  white-space: nowrap;
+}
+
+.newsletter-btn:hover { box-shadow: 0 4px 20px var(--accent-glow); }
+
+/* ═══════════ FAQ ═══════════ */
+.faq-list { max-width: 700px; }
+
+.faq-item {
+  border-bottom: 1px solid var(--border);
+  padding: 20px 0;
+}
+
+.faq-question {
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: color 0.3s;
+}
+
+.faq-question:hover { color: var(--accent); }
+
+.faq-arrow { transition: transform 0.3s; font-size: 20px; color: var(--text-muted); }
+.faq-item.open .faq-arrow { transform: rotate(45deg); color: var(--accent); }
+
+.faq-answer {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease, padding 0.4s ease;
+  color: var(--text-secondary);
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+.faq-item.open .faq-answer {
+  max-height: 300px;
+  padding-top: 16px;
+}
+
+/* ═══════════ FOOTER ═══════════ */
+footer {
+  padding: 48px 0;
+  border-top: 1px solid var(--border);
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+footer a { color: var(--accent); text-decoration: none; }
+
+/* ═══════════ ANIMATIONS ═══════════ */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ═══════════ RESPONSIVE ═══════════ */
+@media (max-width: 768px) {
+  .steps-grid, .pricing-grid, .testimonial-grid { grid-template-columns: 1fr; }
+  .about-grid { grid-template-columns: 1fr; }
+  .hero-stats { flex-direction: column; gap: 24px; }
+  .newsletter-form { flex-direction: column; }
+  .example-section { padding: 24px; }
+  .newsletter-section { padding: 32px; }
+  .about-highlights { flex-wrap: wrap; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════ HERO ═══════════ -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-content">
+      <div class="hero-badge">AI-Powered Content</div>
+      <h1>每週自動收到<br>你的<span class="accent">專屬內容包</span></h1>
+      <p>填一次表，告訴我們你的專業。之後每週一早上，客製化的產業趨勢 + IG 內容腳本就會出現在你的信箱。</p>
+      <a href="YOUR_GOOGLE_FORM_URL" class="hero-cta">開始免費試用 →</a>
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <h3 id="stat-users">0+</h3>
+          <p>訂閱用戶</p>
+        </div>
+        <div class="hero-stat">
+          <h3>2篇/週</h3>
+          <p>IG 內容自動產出</p>
+        </div>
+        <div class="hero-stat">
+          <h3>30分鐘</h3>
+          <p>幫你省下的內容時間</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ HOW IT WORKS ═══════════ -->
+<section>
+  <div class="container">
+    <div class="section-label">How it works</div>
+    <h2 class="section-title">三步驟，內容自動上門</h2>
+    <div class="steps-grid">
+      <div class="step-card">
+        <div class="step-number">01</div>
+        <h3>填寫你的專業資料</h3>
+        <p>花 3 分鐘告訴我們你的產業、受眾、語氣偏好。只需填一次。</p>
+      </div>
+      <div class="step-card">
+        <div class="step-number">02</div>
+        <h3>AI 自動追蹤你的產業</h3>
+        <p>每週自動搜尋你的產業最新趨勢，結合你的專業背景產出客製內容。</p>
+      </div>
+      <div class="step-card">
+        <div class="step-number">03</div>
+        <h3>信箱收到內容包</h3>
+        <p>每週一早上，打開信箱就有完整的 Carousel 腳本、Reels 腳本和 Hashtags。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ PRICING ═══════════ -->
+<section id="pricing">
+  <div class="container">
+    <div class="section-label">Pricing</div>
+    <h2 class="section-title">選擇你的方案</h2>
+    <p class="section-subtitle">所有方案都包含 7 天免費試用，不滿意隨時取消。</p>
+
+    <div class="pricing-grid">
+      <!-- 趨勢方案 -->
+      <div class="price-card">
+        <div class="price-icon">🔍</div>
+        <div class="price-name">趨勢方案</div>
+        <div class="price-amount">699<span> /月</span></div>
+        <p class="price-desc">每週掌握產業動態，內容靈感不斷線</p>
+        <ul class="price-features">
+          <li>每週 3 個產業趨勢分析</li>
+          <li>結合你的專業背景解讀</li>
+          <li>內容靈感建議</li>
+          <li class="disabled">Carousel 腳本</li>
+          <li class="disabled">Reels 腳本</li>
+          <li class="disabled">跨平台版本</li>
+          <li class="disabled">月度內容行事曆</li>
+        </ul>
+        <a href="YOUR_GOOGLE_FORM_URL" class="price-btn">開始試用</a>
+      </div>
+
+      <!-- 腳本方案 -->
+      <div class="price-card featured">
+        <div class="price-icon">📸</div>
+        <div class="price-name">腳本方案</div>
+        <div class="price-amount">899<span> /月</span></div>
+        <p class="price-desc">趨勢 + 完整 IG 腳本，拿到就能發</p>
+        <ul class="price-features">
+          <li>每週 3 個產業趨勢分析</li>
+          <li>結合你的專業背景解讀</li>
+          <li>內容靈感建議</li>
+          <li>每週 1 篇 Carousel 腳本</li>
+          <li>每週 1 篇 Reels 腳本</li>
+          <li class="disabled">跨平台版本</li>
+          <li class="disabled">月度內容行事曆</li>
+        </ul>
+        <a href="YOUR_GOOGLE_FORM_URL" class="price-btn">開始試用</a>
+      </div>
+
+      <!-- 完整方案 -->
+      <div class="price-card">
+        <div class="price-icon">📅</div>
+        <div class="price-name">完整方案</div>
+        <div class="price-amount">999<span> /月</span></div>
+        <p class="price-desc">全平台內容 + 月度行事曆，完全外包</p>
+        <ul class="price-features">
+          <li>每週 3 個產業趨勢分析</li>
+          <li>結合你的專業背景解讀</li>
+          <li>內容靈感建議</li>
+          <li>每週 1 篇 Carousel 腳本</li>
+          <li>每週 1 篇 Reels 腳本</li>
+          <li>Threads + Facebook 版本</li>
+          <li>月度內容行事曆</li>
+        </ul>
+        <a href="YOUR_GOOGLE_FORM_URL" class="price-btn">開始試用</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ WEEKLY EXAMPLE ═══════════ -->
+<section>
+  <div class="container">
+    <div class="section-label">This week's preview</div>
+    <h2 class="section-title">本週內容範例</h2>
+    <p class="section-subtitle">這是我們系統本週為「運動按摩師」產出的真實內容。</p>
+
+    <div class="example-section">
+      <div class="example-tabs">
+        <button class="example-tab active" onclick="showExample('trends')">產業趨勢</button>
+        <button class="example-tab" onclick="showExample('carousel')">Carousel 腳本</button>
+        <button class="example-tab" onclick="showExample('reels')">Reels 腳本</button>
+      </div>
+
+      <div id="example-trends" class="example-content active">
+        <div class="example-card">
+          <h4>趨勢 1</h4>
+          <p id="ex-trend1">每週一自動更新，這裡會顯示最新的產業趨勢分析內容...</p>
+        </div>
+        <div class="example-card">
+          <h4>趨勢 2</h4>
+          <p id="ex-trend2">根據你的產業關鍵字，AI 會自動搜尋並分析最相關的新聞...</p>
+        </div>
+      </div>
+
+      <div id="example-carousel" class="example-content">
+        <div class="example-card">
+          <h4>Carousel 腳本範例</h4>
+          <p id="ex-carousel">第1張：封面 Hook — 「90% 的人伸展都做錯了，正確的方式是...」<br><br>第2張：常見錯誤 — 拉到痛才停<br>第3張：正確做法 — 輕柔漸進...<br><br>這是根據本週趨勢 + 你的專業自動產出的完整腳本。</p>
+        </div>
+      </div>
+
+      <div id="example-reels" class="example-content">
+        <div class="example-card">
+          <h4>Reels 腳本範例</h4>
+          <p id="ex-reels">0-3秒 Hook：「你知道嗎？運動後這個動作比伸展更重要」<br>3-15秒 痛點：很多人運動後只做靜態伸展...<br>15-40秒 教學：試試這3個筋膜放鬆動作...<br>40-50秒 總結：記住，放鬆比拉伸更重要<br>50-60秒 CTA：追蹤我學更多恢復技巧</p>
+        </div>
+      </div>
+
+      <p class="example-update-note">🔄 內容每週一自動更新</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ TESTIMONIALS ═══════════ -->
+<section>
+  <div class="container">
+    <div class="section-label">Testimonials</div>
+    <h2 class="section-title">他們怎麼說</h2>
+    <p class="section-subtitle">來自不同產業的專業人士回饋。</p>
+
+    <div class="testimonial-grid">
+      <div class="testimonial-card">
+        <div class="testimonial-stars">★★★★★</div>
+        <p class="testimonial-text">「以前每週花 3 小時想內容，現在打開信箱就有了。腳本品質比我自己寫的還好，因為它真的懂我的產業。」</p>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar">💆</div>
+          <div>
+            <div class="testimonial-name">Jasmine</div>
+            <div class="testimonial-role">運動按摩師</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="testimonial-card">
+        <div class="testimonial-stars">★★★★★</div>
+        <p class="testimonial-text">「最驚喜的是趨勢分析，它幫我發現了好幾個我沒注意到的產業動態，直接變成我最受歡迎的貼文主題。」</p>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar">🏋️</div>
+          <div>
+            <div class="testimonial-name">Alex</div>
+            <div class="testimonial-role">健身教練</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="testimonial-card">
+        <div class="testimonial-stars">★★★★★</div>
+        <p class="testimonial-text">「完整方案的月度行事曆讓我的社群經營第一次有了規劃感。不用再煩惱今天要發什麼。」</p>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar">🥗</div>
+          <div>
+            <div class="testimonial-name">小美</div>
+            <div class="testimonial-role">營養師</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ ABOUT + NEWSLETTER ═══════════ -->
+<section>
+  <div class="container">
+    <div class="about-grid">
+      <div>
+        <div class="section-label">About</div>
+        <div class="about-name">Karen Chen 凱倫</div>
+        <div class="about-title">AI Workflow Consultant ✦ Content Creator</div>
+        <p class="about-text">我是一個相信「系統比努力更重要」的人。過去兩年，我幫品牌建立 AI 自動化內容系統，讓他們從每天燒腦想內容，變成每週只花 30 分鐘審核。</p>
+        <p class="about-text">Content Autopilot 就是這套系統的訂閱版 — 讓每個有專業知識的人，都能輕鬆經營社群。</p>
+        <div class="about-highlights">
+          <div class="about-highlight">
+            <h4>2+</h4>
+            <p>年 AI 工作流經驗</p>
+          </div>
+          <div class="about-highlight">
+            <h4>10+</h4>
+            <p>品牌自動化系統</p>
+          </div>
+          <div class="about-highlight">
+            <h4>500+</h4>
+            <p>AI 產出的內容</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="newsletter-section">
+        <div class="section-label">Newsletter</div>
+        <h3 class="section-title" style="font-size:24px;">📡 Weekly Signal</h3>
+        <p style="color:var(--text-secondary);font-size:14px;">每週一封，AI 工作流趨勢 + 工具推薦 + 我的真實心得。<br>像朋友寫信給你。</p>
+        <div class="newsletter-form">
+          <input type="email" class="newsletter-input" placeholder="你的 Email" id="newsletter-email">
+          <button class="newsletter-btn" onclick="subscribeNewsletter()">免費訂閱</button>
+        </div>
+        <p style="color:var(--text-muted);font-size:12px;margin-top:12px;">已有 <span id="sub-count">0</span> 人訂閱 · 隨時可退訂</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ FAQ ═══════════ -->
+<section id="faq">
+  <div class="container">
+    <div class="section-label">FAQ</div>
+    <h2 class="section-title">常見問題</h2>
+
+    <div class="faq-list">
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          AI 產出的內容品質好嗎？
+          <span class="faq-arrow">+</span>
+        </div>
+        <div class="faq-answer">我們的系統不是一般的 ChatGPT 產出。每份內容都根據你的專業背景、產業趨勢、和目標受眾量身打造。Claude AI 會結合本週最新的產業動態，用你設定的語氣撰寫。大多數用戶只需要微調 10-20% 就能直接發佈。</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          可以試用嗎？
+          <span class="faq-arrow">+</span>
+        </div>
+        <div class="faq-answer">可以！所有方案都有 7 天免費試用。填完表單後，我們會先寄一份範例內容給你看，確認品質符合預期再開始計費。</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          我需要提供什麼？
+          <span class="faq-arrow">+</span>
+        </div>
+        <div class="faq-answer">只需要填一次表單（約 3 分鐘），告訴我們你的專業、受眾、語氣偏好和相關關鍵字。之後每週內容會自動產出並寄到你的信箱，不需要你做任何事。</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          可以隨時取消嗎？
+          <span class="faq-arrow">+</span>
+        </div>
+        <div class="faq-answer">當然可以。沒有綁約，隨時回覆 Email 說要取消就好。已付款的月份會服務到月底。</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          內容可以修改嗎？
+          <span class="faq-arrow">+</span>
+        </div>
+        <div class="faq-answer">收到的內容完全屬於你，你可以自由修改、調整再發佈。我們建議你加入個人風格和經驗，讓內容更有你的味道。</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          支援哪些產業？
+          <span class="faq-arrow">+</span>
+        </div>
+        <div class="faq-answer">任何有專業知識的領域都適合！目前用戶涵蓋運動按摩、健身教練、營養師、設計師、行銷顧問、工程師等。只要你的產業有持續的新聞和趨勢，我們的系統就能幫你追蹤。</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          跟直接用 ChatGPT 有什麼不同？
+          <span class="faq-arrow">+</span>
+        </div>
+        <div class="faq-answer">三個關鍵差異：1) 我們自動追蹤你的產業趨勢，不需要你手動餵資料。2) 內容結合你的品牌語氣和受眾，不是通用模板。3) 完全自動化 — 你不用每週花時間 prompt，打開信箱就有了。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ FINAL CTA ═══════════ -->
+<section style="text-align:center;padding:80px 0;">
+  <div class="container">
+    <h2 class="section-title">準備好讓內容自動上門了嗎？</h2>
+    <p style="color:var(--text-secondary);font-size:16px;margin-bottom:32px;">3 分鐘填表，下週一就收到你的第一份內容包。</p>
+    <a href="YOUR_GOOGLE_FORM_URL" class="hero-cta">立即開始 →</a>
+  </div>
+</section>
+
+<!-- ═══════════ FOOTER ═══════════ -->
+<footer>
+  <div class="container">
+    <p>Content Autopilot by <a href="https://www.instagram.com/karen_contentbestie/" target="_blank">@karen_contentbestie</a></p>
+    <p style="margin-top:8px;">© 2026 Karen Chen. All rights reserved.</p>
+  </div>
+</footer>
+
+<script>
+// FAQ toggle
+function toggleFaq(el) {
+  el.parentElement.classList.toggle('open');
+}
+
+// Example tabs
+function showExample(id) {
+  document.querySelectorAll('.example-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.example-tab').forEach(el => el.classList.remove('active'));
+  document.getElementById('example-' + id).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// Newsletter subscribe (placeholder)
+function subscribeNewsletter() {
+  const email = document.getElementById('newsletter-email').value;
+  if (!email || !email.includes('@')) {
+    alert('請輸入有效的 Email');
+    return;
+  }
+  alert('感謝訂閱 Weekly Signal！我們會在每週一寄信給你 📡');
+  document.getElementById('newsletter-email').value = '';
+}
+</script>
+
+</body>
+</html>
