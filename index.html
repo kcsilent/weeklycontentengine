@@ -1,940 +1,685 @@
-   <!DOCTYPE html>                                                                                                                                 
-   <html lang="zh-Hant">                                                                                                                           
-   <head>                                                                                                                                          
-   <meta charset="utf-8">                                                                                                                          
-   <meta name="viewport" content="width=device-width, initial-scale=1">                                                                            
-   <title>Weekly Content Engine｜把 AI 變成你的內容團隊</title>                                                                                    
-   <link                                                                                                                                           
- href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Play 
- fair+Display:wght@700;900&display=swap" rel="stylesheet">                                                                                         
-   <style>                                                                                                                                         
-   :root {                                                                                                                                         
-    --bg-dark: #0a0a0f;                                                                                                                            
-    --bg-card: #13131a;                                                                                                                            
-    --bg-card-hover: #1a1a25;                                                                                                                      
-    --accent: #f0c040;                                                                                                                             
-    --accent-glow: rgba(240, 192, 64, 0.15);                                                                                                       
-    --accent-dim: #c9a033;                                                                                                                         
-    --text-primary: #e8e6e1;                                                                                                                       
-    --text-secondary: #8a8890;                                                                                                                     
-    --text-muted: #5a5860;                                                                                                                         
-    --border: #2a2a35;                                                                                                                             
-    --green: #34d399;                                                                                                                              
-    --pink: #f472b6;                                                                                                                               
-    --blue: #60a5fa;                                                                                                                               
-    --purple: #a78bfa;                                                                                                                             
-    --cyan: #22d3ee;                                                                                                                               
-    --gradient-accent: linear-gradient(135deg, #f0c040 0%, #f59e0b 50%, #ef4444 100%);                                                             
-   }                                                                                                                                               
-   * { margin: 0; padding: 0; box-sizing: border-box; }                                                                                            
-   html { scroll-behavior: smooth; }                                                                                                               
-   body {                                                                                                                                          
-    font-family: 'Noto Sans TC', 'DM Sans', sans-serif;                                                                                            
-    background: var(--bg-dark);                                                                                                                    
-    color: var(--text-primary);                                                                                                                    
-    line-height: 1.7;                                                                                                                              
-    overflow-x: hidden;                                                                                                                            
-   }                                                                                                                                               
-   body::before {                                                                                                                                  
-    content: '';                                                                                                                                   
-    position: fixed;                                                                                                                               
-    top: 0; left: 0; width: 100%; height: 100%;                                                                                                    
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter                          
- id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25'   
- height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");                                                                            
-    pointer-events: none;                                                                                                                          
-    z-index: 9999;                                                                                                                                 
-   }                                                                                                                                               
-   .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }                                                                              
-                                                                                                                                                   
-   /* ═══════════ HERO ═══════════ */                                                                                                              
-   .hero {                                                                                                                                         
-    min-height: 100vh;                                                                                                                             
-    display: flex;                                                                                                                                 
-    align-items: center;                                                                                                                           
-    position: relative;                                                                                                                            
-    padding: 120px 0 80px;                                                                                                                         
-   }                                                                                                                                               
-   .hero::before {                                                                                                                                 
-    content: '';                                                                                                                                   
-    position: absolute;                                                                                                                            
-    top: -200px; right: -300px;                                                                                                                    
-    width: 800px; height: 800px;                                                                                                                   
-    background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);                                                                   
-    pointer-events: none;                                                                                                                          
-   }                                                                                                                                               
-   .hero-content { position: relative; z-index: 1; }                                                                                               
-   .hero-badge {                                                                                                                                   
-    display: inline-block;                                                                                                                         
-    padding: 6px 16px;                                                                                                                             
-    border: 1px solid var(--accent-dim);                                                                                                           
-    border-radius: 100px;                                                                                                                          
-    font-size: 13px;                                                                                                                               
-    color: var(--accent);                                                                                                                          
-    letter-spacing: 2px;                                                                                                                           
-    text-transform: uppercase;                                                                                                                     
-    margin-bottom: 32px;                                                                                                                           
-    animation: fadeInUp 0.8s ease;                                                                                                                 
-   }                                                                                                                                               
-   .hero h1 {                                                                                                                                      
-    font-family: 'Playfair Display', serif;                                                                                                        
-    font-size: clamp(42px, 7vw, 80px);                                                                                                             
-    font-weight: 900;                                                                                                                              
-    line-height: 1.1;                                                                                                                              
-    margin-bottom: 24px;                                                                                                                           
-    animation: fadeInUp 0.8s ease 0.1s both;                                                                                                       
-   }                                                                                                                                               
-   .hero h1 .accent {                                                                                                                              
-    background: var(--gradient-accent);                                                                                                            
-    -webkit-background-clip: text;                                                                                                                 
-    -webkit-text-fill-color: transparent;                                                                                                          
-    background-clip: text;                                                                                                                         
-   }                                                                                                                                               
-   .hero p {                                                                                                                                       
-    font-size: 18px;                                                                                                                               
-    color: var(--text-secondary);                                                                                                                  
-    max-width: 580px;                                                                                                                              
-    margin-bottom: 12px;                                                                                                                           
-    animation: fadeInUp 0.8s ease 0.2s both;                                                                                                       
-   }                                                                                                                                               
-   .hero-trial-note {                                                                                                                              
-    font-size: 14px;                                                                                                                               
-    color: var(--cyan);                                                                                                                            
-    margin-bottom: 32px;                                                                                                                           
-    animation: fadeInUp 0.8s ease 0.25s both;                                                                                                      
-   }                                                                                                                                               
-   .hero-trial-note span {                                                                                                                         
-    background: rgba(34, 211, 238, 0.1);                                                                                                           
-    border: 1px solid rgba(34, 211, 238, 0.3);                                                                                                     
-    border-radius: 6px;                                                                                                                            
-    padding: 4px 12px;                                                                                                                             
-    display: inline-block;                                                                                                                         
-   }                                                                                                                                               
-   .hero-cta {                                                                                                                                     
-    display: inline-flex;                                                                                                                          
-    align-items: center;                                                                                                                           
-    gap: 12px;                                                                                                                                     
-    padding: 16px 36px;                                                                                                                            
-    background: var(--accent);                                                                                                                     
-    color: var(--bg-dark);                                                                                                                         
-    text-decoration: none;                                                                                                                         
-    border-radius: 8px;                                                                                                                            
-    font-weight: 700;                                                                                                                              
-    font-size: 16px;                                                                                                                               
-    transition: all 0.3s;                                                                                                                          
-    animation: fadeInUp 0.8s ease 0.3s both;                                                                                                       
-   }                                                                                                                                               
-   .hero-cta:hover { transform: translateY(-2px); box-shadow: 0 8px 30px var(--accent-glow); }                                                     
-   .hero-stats {                                                                                                                                   
-    display: flex;                                                                                                                                 
-    gap: 48px;                                                                                                                                     
-    margin-top: 64px;                                                                                                                              
-    animation: fadeInUp 0.8s ease 0.4s both;                                                                                                       
-   }                                                                                                                                               
-   .hero-stat h3 {                                                                                                                                 
-    font-family: 'Playfair Display', serif;                                                                                                        
-    font-size: 36px;                                                                                                                               
-    color: var(--accent);                                                                                                                          
-   }                                                                                                                                               
-   .hero-stat p { font-size: 13px; color: var(--text-muted); margin: 0; }                                                                          
-                                                                                                                                                   
-   /* ═══════════ SHARED ═══════════ */                                                                                                            
-   section { padding: 100px 0; }                                                                                                                   
-   .section-label {                                                                                                                                
-    font-size: 12px;                                                                                                                               
-    letter-spacing: 3px;                                                                                                                           
-    text-transform: uppercase;                                                                                                                     
-    color: var(--accent);                                                                                                                          
-    margin-bottom: 16px;                                                                                                                           
-   }                                                                                                                                               
-   .section-title {                                                                                                                                
-    font-family: 'Playfair Display', serif;                                                                                                        
-    font-size: clamp(28px, 4vw, 42px);                                                                                                             
-    font-weight: 700;                                                                                                                              
-    margin-bottom: 16px;                                                                                                                           
-   }                                                                                                                                               
-   .section-subtitle {                                                                                                                             
-    color: var(--text-secondary);                                                                                                                  
-    font-size: 16px;                                                                                                                               
-    max-width: 560px;                                                                                                                              
-    margin-bottom: 48px;                                                                                                                           
-   }                                                                                                                                               
-                                                                                                                                                   
-   /* ═══════════ HOW IT WORKS ═══════════ */                                                                                                      
-   .steps-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }                                                                
-   .step-card {                                                                                                                                    
-    background: var(--bg-card);                                                                                                                    
-    border: 1px solid var(--border);                                                                                                               
-    border-radius: 12px;                                                                                                                           
-    padding: 32px;                                                                                                                                 
-    transition: all 0.3s;                                                                                                                          
-   }                                                                                                                                               
-   .step-card:hover {                                                                                                                              
-    background: var(--bg-card-hover);                                                                                                              
-    border-color: var(--accent-dim);                                                                                                               
-    transform: translateY(-4px);                                                                                                                   
-   }                                                                                                                                               
-   .step-number {                                                                                                                                  
-    font-family: 'Playfair Display', serif;                                                                                                        
-    font-size: 48px;                                                                                                                               
-    color: var(--accent);                                                                                                                          
-    opacity: 0.3;                                                                                                                                  
-    line-height: 1;                                                                                                                                
-    margin-bottom: 16px;                                                                                                                           
-   }                                                                                                                                               
-   .step-card h3 { font-size: 18px; margin-bottom: 8px; }                                                                                          
-   .step-card p { color: var(--text-secondary); font-size: 14px; }                                                                                 
-   .step-badge {                                                                                                                                   
-    display: inline-block;                                                                                                                         
-    margin-top: 10px;                                                                                                                              
-    padding: 3px 10px;                                                                                                                             
-    background: rgba(34, 211, 238, 0.1);                                                                                                           
-    border: 1px solid rgba(34, 211, 238, 0.3);                                                                                                     
-    border-radius: 100px;                                                                                                                          
-    font-size: 11px;                                                                                                                               
-    color: var(--cyan);                                                                                                                            
-   }                                                                                                                                               
-                                                                                                                                                   
-   /* ═══════════ PRICING ═══════════ */                                                                                                           
-   .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; align-items: start; }                                          
-   .price-card {                                                                                                                                   
-    background: var(--bg-card);                                                                                                                    
-    border: 1px solid var(--border);                                                                                                               
-    border-radius: 16px;                                                                                                                           
-    padding: 36px;                                                                                                                                 
-    transition: all 0.3s;                                                                                                                          
-    position: relative;                                                                                                                            
-   }                                                                                                                                               
-   .price-card.featured {                                                                                                                          
-    border-color: var(--accent);                                                                                                                   
-    box-shadow: 0 0 60px var(--accent-glow);                                                                                                       
-   }                                                                                                                                               
-   .price-card.featured::before {                                                                                                                  
-    content: '最受歡迎';                                                                                                                           
-    position: absolute;                                                                                                                            
-    top: -12px;                                                                                                                                    
-    left: 50%;                                                                                                                                     
-    transform: translateX(-50%);                                                                                                                   
-    background: var(--accent);                                                                                                                     
-    color: var(--bg-dark);                                                                                                                         
-    padding: 4px 16px;                                                                                                                             
-    border-radius: 100px;                                                                                                                          
-    font-size: 12px;                                                                                                                               
-    font-weight: 700;                                                                                                                              
-   }                                                                                                                                               
-   .price-card:hover { transform: translateY(-4px); }                                                                                              
-   .price-icon { font-size: 32px; margin-bottom: 16px; }                                                                                           
-   .price-name { font-size: 20px; font-weight: 700; margin-bottom: 8px; }                                                                          
-   .price-amount {                                                                                                                                 
-    font-family: 'Playfair Display', serif;                                                                                                        
-    font-size: 42px;                                                                                                                               
-    font-weight: 900;                                                                                                                              
-    color: var(--accent);                                                                                                                          
-   }                                                                                                                                               
-   .price-amount span { font-size: 16px; color: var(--text-muted); font-family: 'Noto Sans TC', sans-serif; font-weight: 400; }                    
-   .price-desc { color: var(--text-secondary); font-size: 14px; margin: 12px 0 24px; min-height: 66px; }                                           
-   .price-features { list-style: none; margin-bottom: 32px; }                                                                                      
-   .price-features li {                                                                                                                            
-    padding: 8px 0;                                                                                                                                
-    font-size: 14px;                                                                                                                               
-    color: var(--text-secondary);                                                                                                                  
-    border-bottom: 1px solid var(--border);                                                                                                        
-    display: flex;                                                                                                                                 
-    gap: 8px;                                                                                                                                      
-    align-items: flex-start;                                                                                                                       
-   }                                                                                                                                               
-   .price-features li::before { content: '✓'; color: var(--green); font-weight: bold; flex-shrink: 0; }                                            
-   .price-features li.disabled { opacity: 0.3; }                                                                                                   
-   .price-features li.disabled::before { content: '—'; color: var(--text-muted); }                                                                 
-   .price-features li.highlight { color: var(--accent); }                                                                                          
-   .price-features li.highlight::before { content: '★'; color: var(--accent); }                                                                    
-   .price-btn {                                                                                                                                    
-    display: block;                                                                                                                                
-    width: 100%;                                                                                                                                   
-    padding: 14px;                                                                                                                                 
-    text-align: center;                                                                                                                            
-    border-radius: 8px;                                                                                                                            
-    text-decoration: none;                                                                                                                         
-    font-weight: 700;                                                                                                                              
-    font-size: 15px;                                                                                                                               
-    transition: all 0.3s;                                                                                                                          
-    border: 1px solid var(--border);                                                                                                               
-    color: var(--text-primary);                                                                                                                    
-    background: transparent;                                                                                                                       
-    cursor: pointer;                                                                                                                               
-    font-family: 'Noto Sans TC', sans-serif;                                                                                                       
-   }                                                                                                                                               
-   .price-btn:hover { border-color: var(--accent); color: var(--accent); }                                                                         
-   .price-card.featured .price-btn { background: var(--accent); color: var(--bg-dark); border: none; }                                             
-   .price-card.featured .price-btn:hover { box-shadow: 0 4px 20px var(--accent-glow); }                                                            
-   .price-compare {                                                                                                                                
-    text-align: center;                                                                                                                            
-    margin-top: 40px;                                                                                                                              
-    color: var(--text-muted);                                                                                                                      
-    font-size: 13px;                                                                                                                               
-   }                                                                                                                                               
-   .price-compare a { color: var(--accent); text-decoration: none; cursor: pointer; }                                                              
-                                                                                                                                                   
-   /* ═══════════ EXAMPLES ═══════════ */                                                                                                          
-   .example-section {                                                                                                                              
-    background: var(--bg-card);                                                                                                                    
-    border-radius: 16px;                                                                                                                           
-    padding: 48px;                                                                                                                                 
-    margin-top: 48px;                                                                                                                              
-    border: 1px solid var(--border);                                                                                                               
-   }                                                                                                                                               
-   .example-tabs {                                                                                                                                 
-    display: flex;                                                                                                                                 
-    gap: 8px;                                                                                                                                      
-    margin-bottom: 32px;                                                                                                                           
-    flex-wrap: wrap;                                                                                                                               
-   }                                                                                                                                               
-   .example-tab {                                                                                                                                  
-    padding: 8px 20px;                                                                                                                             
-    border-radius: 100px;                                                                                                                          
-    border: 1px solid var(--border);                                                                                                               
-    background: transparent;                                                                                                                       
-    color: var(--text-secondary);                                                                                                                  
-    cursor: pointer;                                                                                                                               
-    font-size: 13px;                                                                                                                               
-    font-family: 'Noto Sans TC', sans-serif;                                                                                                       
-    transition: all 0.3s;                                                                                                                          
-    display: flex;                                                                                                                                 
-    align-items: center;                                                                                                                           
-    gap: 6px;                                                                                                                                      
-   }                                                                                                                                               
-   .example-tab.active, .example-tab:hover {                                                                                                       
-    border-color: var(--accent);                                                                                                                   
-    color: var(--accent);                                                                                                                          
-    background: var(--accent-glow);                                                                                                                
-   }                                                                                                                                               
-   .example-tab .plan-badge {                                                                                                                      
-    font-size: 10px;                                                                                                                               
-    padding: 1px 7px;                                                                                                                              
-    border-radius: 100px;                                                                                                                          
-    background: rgba(167, 139, 250, 0.15);                                                                                                         
-    color: var(--purple);                                                                                                                          
-    border: 1px solid rgba(167, 139, 250, 0.3);                                                                                                    
-   }                                                                                                                                               
-   .example-content { display: none; animation: fadeIn 0.4s ease; }                                                                                
-   .example-content.active { display: block; }                                                                                                     
-   .example-card {                                                                                                                                 
-    background: var(--bg-dark);                                                                                                                    
-    border-radius: 12px;                                                                                                                           
-    padding: 24px;                                                                                                                                 
-    margin-bottom: 16px;                                                                                                                           
-    border: 1px solid var(--border);                                                                                                               
-   }                                                                                                                                               
-   .example-card h4 {                                                                                                                              
-    font-size: 13px;                                                                                                                               
-    margin-bottom: 12px;                                                                                                                           
-    text-transform: uppercase;                                                                                                                     
-    letter-spacing: 1px;                                                                                                                           
-    display: flex;                                                                                                                                 
-    align-items: center;                                                                                                                           
-    gap: 8px;                                                                                                                                      
-   }                                                                                                                                               
-   .example-card h4.trend { color: var(--accent); }                                                                                                
-   .example-card h4.carousel { color: var(--green); }                                                                                              
-   .example-card h4.reels { color: var(--pink); }                                                                                                  
-   .example-card h4.calendar { color: var(--blue); }                                                                                               
-   .example-card h4.competitor { color: var(--purple); }                                                                                           
-   .example-card p {                                                                                                                               
-    color: var(--text-secondary);                                                                                                                  
-    font-size: 14px;                                                                                                                               
-    line-height: 1.9;                                                                                                                              
-   }                                                                                                                                               
-   .cal-week {                                                                                                                                     
-    display: grid;                                                                                                                                 
-    grid-template-columns: 80px 1fr 100px 120px;                                                                                                   
-    gap: 12px;                                                                                                                                     
-    align-items: center;                                                                                                                           
-    padding: 12px 0;                                                                                                                               
-    border-bottom: 1px solid var(--border);                                                                                                        
-    font-size: 13px;                                                                                                                               
-   }                                                                                                                                               
-   .cal-week:last-child { border-bottom: none; }                                                                                                   
-   .cal-week-label {                                                                                                                               
-    color: var(--accent);                                                                                                                          
-    font-weight: 700;                                                                                                                              
-    font-size: 12px;                                                                                                                               
-   }                                                                                                                                               
-   .cal-topic { color: var(--text-primary); }                                                                                                      
-   .cal-format {                                                                                                                                   
-    padding: 3px 10px;                                                                                                                             
-    border-radius: 100px;                                                                                                                          
-    font-size: 11px;                                                                                                                               
-    text-align: center;                                                                                                                            
-   }                                                                                                                                               
-   .cal-format.carousel { background: rgba(52, 211, 153, 0.1); color: var(--green); border: 1px solid rgba(52, 211, 153, 0.3); }                   
-   .cal-format.reels { background: rgba(244, 114, 182, 0.1); color: var(--pink); border: 1px solid rgba(244, 114, 182, 0.3); }                     
-   .cal-platform { color: var(--text-muted); font-size: 12px; }                                                                                    
-   .competitor-card {                                                                                                                              
-    background: linear-gradient(135deg, rgba(167, 139, 250, 0.05), rgba(96, 165, 250, 0.05));                                                      
-    border: 1px solid rgba(167, 139, 250, 0.2);                                                                                                    
-    border-radius: 10px;                                                                                                                           
-    padding: 20px;                                                                                                                                 
-    margin-bottom: 12px;                                                                                                                           
-   }                                                                                                                                               
-   .competitor-card .direction-num {                                                                                                               
-    font-family: 'Playfair Display', serif;                                                                                                        
-    font-size: 28px;                                                                                                                               
-    color: var(--purple);                                                                                                                          
-    opacity: 0.4;                                                                                                                                  
-    float: left;                                                                                                                                   
-    margin-right: 12px;                                                                                                                            
-    line-height: 1;                                                                                                                                
-   }                                                                                                                                               
-   .competitor-card h5 { font-size: 15px; color: var(--text-primary); margin-bottom: 6px; }                                                        
-   .competitor-card p { font-size: 13px; color: var(--text-secondary); line-height: 1.7; }                                                         
-   .example-update-note {                                                                                                                          
-    text-align: center;                                                                                                                            
-    color: var(--text-muted);                                                                                                                      
-    font-size: 12px;                                                                                                                               
-    margin-top: 16px;                                                                                                                              
-   }                                                                                                                                               
-                                                                                                                                                   
-   /* ═══════════ TESTIMONIALS ═══════════ */                                                                                                      
-   .testimonial-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }                                                          
-   .testimonial-card {                                                                                                                             
-    background: var(--bg-card);                                                                                                                    
-    border: 1px solid var(--border);                                                                                                               
-    border-radius: 12px;                                                                                                                           
-    padding: 32px;                                                                                                                                 
-   }                                                                                                                                               
-   .testimonial-stars { color: var(--accent); font-size: 14px; margin-bottom: 16px; letter-spacing: 2px; }                                         
-   .testimonial-text {                                                                                                                             
-    color: var(--text-secondary);                                                                                                                  
-    font-size: 15px;                                                                                                                               
-    line-height: 1.8;                                                                                                                              
-    margin-bottom: 20px;                                                                                                                           
-    font-style: italic;                                                                                                                            
-   }                                                                                                                                               
-   .testimonial-author { display: flex; align-items: center; gap: 12px; }                                                                          
-   .testimonial-avatar {                                                                                                                           
-    width: 40px; height: 40px;                                                                                                                     
-    border-radius: 50%;                                                                                                                            
-    background: var(--gradient-accent);                                                                                                            
-    display: flex; align-items: center; justify-content: center;                                                                                   
-    font-size: 16px;                                                                                                                               
-   }                                                                                                                                               
-   .testimonial-name { font-size: 14px; font-weight: 500; }                                                                                        
-   .testimonial-role { font-size: 12px; color: var(--text-muted); }                                                                                
-   .testimonial-plan { font-size: 11px; color: var(--accent); margin-top: 2px; }                                                                   
-                                                                                                                                                   
-   /* ═══════════ ABOUT ═══════════ */                                                                                                             
-   .about-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: 64px; align-items: center; }                                                
-   .about-name { font-family: 'Playfair Display', serif; font-size: 28px; margin-bottom: 8px; }                                                    
-   .about-title { color: var(--accent); font-size: 14px; letter-spacing: 1px; margin-bottom: 24px; }                                               
-   .about-text { color: var(--text-secondary); font-size: 15px; margin-bottom: 16px; }                                                             
-   .about-highlights { display: flex; gap: 24px; margin-top: 32px; }                                                                               
-   .about-highlight { text-align: center; }                                                                                                        
-   .about-highlight h4 { font-family: 'Playfair Display', serif; font-size: 28px; color: var(--accent); }                                          
-   .about-highlight p { font-size: 12px; color: var(--text-muted); }                                                                               
-                                                                                                                                                   
-   /* ═══════════ NEWSLETTER ═══════════ */                                                                                                        
-   .newsletter-section {                                                                                                                           
-    background: var(--bg-card);                                                                                                                    
-    border: 1px solid var(--border);                                                                                                               
-    border-radius: 16px;                                                                                                                           
-    padding: 64px;                                                                                                                                 
-    text-align: center;                                                                                                                            
-    margin-top: 0;                                                                                                                                 
-   }                                                                                                                                               
-   .newsletter-form { display: flex; gap: 12px; max-width: 480px; margin: 32px auto 0; }                                                           
-   .newsletter-input {                                                                                                                             
-    flex: 1;                                                                                                                                       
-    padding: 14px 20px;                                                                                                                            
-    background: var(--bg-dark);                                                                                                                    
-    border: 1px solid var(--border);                                                                                                               
-    border-radius: 8px;                                                                                                                            
-    color: var(--text-primary);                                                                                                                    
-    font-size: 15px;                                                                                                                               
-    font-family: 'Noto Sans TC', sans-serif;                                                                                                       
-    outline: none;                                                                                                                                 
-    transition: border-color 0.3s;                                                                                                                 
-   }                                                                                                                                               
-   .newsletter-input:focus { border-color: var(--accent); }                                                                                        
-   .newsletter-btn {                                                                                                                               
-    padding: 14px 28px;                                                                                                                            
-    background: var(--accent);                                                                                                                     
-    color: var(--bg-dark);                                                                                                                         
-    border: none;                                                                                                                                  
-    border-radius: 8px;                                                                                                                            
-    font-weight: 700;                                                                                                                              
-    font-size: 15px;                                                                                                                               
-    cursor: pointer;                                                                                                                               
-    font-family: 'Noto Sans TC', sans-serif;                                                                                                       
-    transition: all 0.3s;                                                                                                                          
-    white-space: nowrap;                                                                                                                           
-   }                                                                                                                                               
-   .newsletter-btn:hover { box-shadow: 0 4px 20px var(--accent-glow); }                                                                            
-                                                                                                                                                   
-   /* ═══════════ FAQ ═══════════ */                                                                                                               
-   .faq-list { max-width: 700px; }                                                                                                                 
-   .faq-item { border-bottom: 1px solid var(--border); padding: 20px 0; }                                                                          
-   .faq-question {                                                                                                                                 
-    font-size: 16px;                                                                                                                               
-    font-weight: 500;                                                                                                                              
-    cursor: pointer;                                                                                                                               
-    display: flex;                                                                                                                                 
-    justify-content: space-between;                                                                                                                
-    align-items: center;                                                                                                                           
-    transition: color 0.3s;                                                                                                                        
-   }                                                                                                                                               
-   .faq-question:hover { color: var(--accent); }                                                                                                   
-   .faq-arrow { transition: transform 0.3s; font-size: 20px; color: var(--text-muted); }                                                           
-   .faq-item.open .faq-arrow { transform: rotate(45deg); color: var(--accent); }                                                                   
-   .faq-answer {                                                                                                                                   
-    max-height: 0;                                                                                                                                 
-    overflow: hidden;                                                                                                                              
-    transition: max-height 0.4s ease, padding 0.4s ease;                                                                                           
-    color: var(--text-secondary);                                                                                                                  
-    font-size: 14px;                                                                                                                               
-    line-height: 1.8;                                                                                                                              
-   }                                                                                                                                               
-   .faq-item.open .faq-answer { max-height: 400px; padding-top: 16px; }                                                                            
-                                                                                                                                                   
-   /* ═══════════ FOOTER ═══════════ */                                                                                                            
-   footer {                                                                                                                                        
-    padding: 48px 0;                                                                                                                               
-    border-top: 1px solid var(--border);                                                                                                           
-    text-align: center;                                                                                                                            
-    color: var(--text-muted);                                                                                                                      
-    font-size: 13px;                                                                                                                               
-   }                                                                                                                                               
-   footer a { color: var(--accent); text-decoration: none; }                                                                                       
-                                                                                                                                                   
-   /* ═══════════ ANIMATIONS ═══════════ */                                                                                                        
-   @keyframes fadeInUp {                                                                                                                           
-    from { opacity: 0; transform: translateY(24px); }                                                                                              
-    to { opacity: 1; transform: translateY(0); }                                                                                                   
-   }                                                                                                                                               
-   @keyframes fadeIn {                                                                                                                             
-    from { opacity: 0; }                                                                                                                           
-    to { opacity: 1; }                                                                                                                             
-   }                                                                                                                                               
-                                                                                                                                                   
-   /* ═══════════ RESPONSIVE ═══════════ */                                                                                                        
-   @media (max-width: 768px) {                                                                                                                     
-    .steps-grid, .pricing-grid, .testimonial-grid { grid-template-columns: 1fr; }                                                                  
-    .about-grid { grid-template-columns: 1fr; }                                                                                                    
-    .hero-stats { flex-direction: column; gap: 24px; }                                                                                             
-    .newsletter-form { flex-direction: column; }                                                                                                   
-    .example-section { padding: 24px; }                                                                                                            
-    .newsletter-section { padding: 32px 24px; }                                                                                                    
-    .about-highlights { flex-wrap: wrap; }                                                                                                         
-    .cal-week { grid-template-columns: 60px 1fr; }                                                                                                 
-    .cal-format, .cal-platform { display: none; }                                                                                                  
-   }                                                                                                                                               
-   </style>                                                                                                                                        
-   </head>                                                                                                                                         
-   <body>                                                                                                                                          
-                                                                                                                                                   
-   <!-- ═══════════ HERO ═══════════ -->                                                                                                           
-   <section class="hero">                                                                                                                          
-    <div class="container">                                                                                                                        
-     <div class="hero-content">                                                                                                                    
-      <div class="hero-badge">AI-Powered Content System</div>                                                                                      
-      <h1>把 AI 變成你的<br><span class="accent">內容團隊</span></h1>                                                                              
-      <p>為創作者、顧問、教練與知識工作者打造的 AI                                                                                                 
- 內容系統。自動追蹤產業趨勢、生成客製化內容腳本與月度規劃，幫你更穩定發文、建立影響力，不再每週從零開始想內容。</p>                                
-      <p class="hero-trial-note">                                                                                                                  
-       <span>🎁 7 天免費試用：每天早上 8:00 自動送達 ｜ 正式訂閱後每週一寄送</span>                                                                
-      </p>                                                                                                                                         
-      <a href="https://forms.gle/i6vvD7tGzcah3ZYw5" class="hero-cta">立即開始 7 天免費試用 →</a>                                                   
-      <div class="hero-stats">                                                                                                                     
-       <div class="hero-stat">                                                                                                                     
-        <h3 id="stat-users">80+</h3>                                                                                                               
-        <p>訂閱用戶</p>                                                                                                                            
-       </div>                                                                                                                                      
-       <div class="hero-stat">                                                                                                                     
-        <h3>3個/週</h3>                                                                                                                            
-        <p>產業趨勢分析</p>                                                                                                                        
-       </div>                                                                                                                                      
-       <div class="hero-stat">                                                                                                                     
-        <h3>30分鐘+</h3>                                                                                                                           
-        <p>每週省下的內容規劃時間</p>                                                                                                              
-       </div>                                                                                                                                      
-      </div>                                                                                                                                       
-     </div>                                                                                                                                        
-    </div>                                                                                                                                         
-   </section>                                                                                                                                      
-                                                                                                                                                   
-   <!-- ═══════════ HOW IT WORKS ═══════════ -->                                                                                                   
-   <section>                                                                                                                                       
-    <div class="container">                                                                                                                        
-     <div class="section-label">How it works</div>                                                                                                 
-     <h2 class="section-title">三步驟，讓內容自動進入你的工作流</h2>                                                                               
-     <div class="steps-grid">                                                                                                                      
-      <div class="step-card">                                                                                                                      
-       <div class="step-number">01</div>                                                                                                           
-       <h3>填寫你的專業資料</h3>                                                                                                                   
-       <p>花 3 分鐘告訴我們你的產業、受眾、品牌語氣與內容方向。只需填一次，系統就會記住你的設定。</p>                                              
-      </div>                                                                                                                                       
-      <div class="step-card">                                                                                                                      
-       <div class="step-number">02</div>                                                                                                           
-       <h3>AI 自動追蹤你的產業趨勢</h3>                                                                                                            
-       <p>系統持續追蹤你所在領域的熱門議題、產業變化與內容切角，結合你的專業背景與品牌語氣，整理成可直接使用的內容方向。</p>                       
-      </div>                                                                                                                                       
-      <div class="step-card">                                                                                                                      
-       <div class="step-number">03</div>                                                                                                           
-       <h3>每週收到可直接使用的內容包</h3>                                                                                                         
-       <p>信箱裡會出現為你客製化的趨勢分析、Carousel 腳本、Reels 腳本與內容規劃，打開就能開始用。</p>                                              
-       <div class="step-badge">🎁 試用期間每天早上 8:00</div>                                                                                      
-      </div>                                                                                                                                       
-     </div>                                                                                                                                        
-    </div>                                                                                                                                         
-   </section>                                                                                                                                      
-                                                                                                                                                   
-   <!-- ═══════════ PRICING ═══════════ -->                                                                                                        
-   <section id="pricing">                                                                                                                          
-    <div class="container">                                                                                                                        
-     <div class="section-label">Pricing</div>                                                                                                      
-     <h2 class="section-title">選擇最適合你現在階段的方案</h2>                                                                                     
-     <p class="section-subtitle">所有方案都包含 7 天免費試用。試用期間每天早上 8:00 自動送達，幫你快速判斷這套系統適不適合你。</p>                 
-     <div class="pricing-grid">                                                                                                                    
-                                                                                                                                                   
-      <div class="price-card">                                                                                                                     
-       <div class="price-icon">🚀</div>                                                                                                            
-       <div class="price-name">入門方案</div>                                                                                                      
-       <div class="price-amount">699<span> /月</span></div>                                                                                        
-       <p class="price-desc">適合剛開始想穩定輸出內容、不想再每週卡題目的個人品牌經營者。</p>                                                      
-       <ul class="price-features">                                                                                                                 
-        <li>每週 3 個產業趨勢分析</li>                                                                                                             
-        <li>專業解讀 + 內容靈感方向</li>                                                                                                           
-        <li>每週 Carousel 腳本（7-8張）</li>                                                                                                       
-        <li>每週 Reels 腳本（30-60秒）</li>                                                                                                        
-        <li>完整 Hashtags 策略</li>                                                                                                                
-        <li class="disabled">Threads + Facebook 跨平台版</li>                                                                                      
-        <li class="disabled">月度內容行事曆</li>                                                                                                   
-        <li class="disabled">競爭對手爆款分析</li>                                                                                                 
-        <li class="disabled">每月 1:1 顧問諮詢</li>                                                                                                
-       </ul>                                                                                                                                       
-       <a href="https://forms.gle/i6vvD7tGzcah3ZYw5" class="price-btn">7 天免費試用</a>                                                            
-      </div>                                                                                                                                       
-                                                                                                                                                   
-      <div class="price-card featured">                                                                                                            
-       <div class="price-icon">📈</div>                                                                                                            
-       <div class="price-name">成長方案</div>                                                                                                      
-       <div class="price-amount">1,199<span> /月</span></div>                                                                                      
-       <p class="price-desc">適合已經在經營內容，想提升效率、加快成長、讓內容更有節奏的人。</p>                                                    
-       <ul class="price-features">                                                                                                                 
-        <li>含入門方案所有內容</li>                                                                                                                
-        <li>Threads + Facebook 跨平台改寫</li>                                                                                                     
-        <li>月度內容行事曆（4週完整規劃）</li>                                                                                                     
-        <li class="highlight">每週競爭對手爆款分析（3個方向）</li>                                                                                 
-        <li class="highlight">高互動 Hook 公式建議</li>                                                                                            
-        <li class="disabled">每月 1:1 顧問諮詢</li>                                                                                                
-       </ul>                                                                                                                                       
-       <a href="https://forms.gle/i6vvD7tGzcah3ZYw5" class="price-btn">免費試用成長方案</a>                                                        
-      </div>                                                                                                                                       
-                                                                                                                                                   
-      <div class="price-card">                                                                                                                     
-       <div class="price-icon">👑</div>                                                                                                            
-       <div class="price-name">VIP 方案</div>                                                                                                      
-       <div class="price-amount">2,499<span> /月</span></div>                                                                                      
-       <p class="price-desc">適合把內容當成事業在經營， 想搭配 Karen 的策略判斷一起優化的人。</p>                                                  
-       <ul class="price-features">                                                                                                                 
-        <li>含成長方案所有內容</li>                                                                                                                
-        <li class="highlight">每月 60 分鐘 Karen 1:1 諮詢</li>                                                                                     
-        <li class="highlight">個人化帳號成長策略</li>                                                                                              
-        <li class="highlight">內容數據覆盤 + 方向調整</li>                                                                                         
-        <li>優先支援（24小時內回應）</li>                                                                                                          
-       </ul>                                                                                                                                       
-       <a href="https://forms.gle/i6vvD7tGzcah3ZYw5" class="price-btn">立即預約諮詢</a>                                                            
-      </div>                                                                                                                                       
-     </div>                                                                                                                                        
-     <p class="price-compare">不確定哪個方案適合你 ？<a                                                                                            
- onclick="document.getElementById('faq').scrollIntoView({behavior:'smooth'})">看常見問題</a> 或直接先試用，感受這套內容系統適不適合你。</p>        
-    </div>                                                                                                                                         
-   </section>                                                                                                                                      
-                                                                                                                                                   
-   <!-- ═══════════ WEEKLY EXAMPLE ═══════════ -->                                                                                                 
-   <section>                                                                                                                                       
-    <div class="container">                                                                                                                        
-     <div class="section-label">This week's preview</div>                                                                                          
-     <h2 class="section-title">本週內容範例</h2>                                                                                                   
-     <p class="section-subtitle">以下是系統為「運動按摩師」產出的真實內容範例。你的版本會根據你的產業、受眾與品牌語氣客製化調整。</p>              
-                                                                                                                                                   
-     <div class="example-section">                                                                                                                 
-      <div class="example-tabs">                                                                                                                   
-       <button class="example-tab active" onclick="showExample('trends', this)">📡 產業趨勢</button>                                               
-       <button class="example-tab" onclick="showExample('carousel', this)">📸 Carousel 腳本</button>                                               
-       <button class="example-tab" onclick="showExample('reels', this)">🎬 Reels 腳本</button>                                                     
-       <button class="example-tab" onclick="showExample('calendar', this)">📅 月行事曆</button>                                                    
-       <button class="example-tab" onclick="showExample('competitor ', this)">🏆 競爭爆款分析 <span class="plan-badge">成長以上</span></button>    
-      </div>                                                                                                                                       
-                                                                                                                                                   
-      <!-- 這裡保留你原本的 example 內容 -->                                                                                                       
-      <!-- 你可以直接沿用你現在的 trends / carousel / reels / calendar / competitor 區塊 -->                                                       
-                                                                                                                                                   
-      <div id="example-trends" class="example-content active">                                                                                     
-       <div class="example-card">                                                                                                                  
-        <h4 class="trend">📡 趨勢 1 ｜ 筋膜球 vs 泡棉滾筒：最新研究怎麼說</h4>                                                                     
-        <p>本週運動醫學期刊指出，高密度筋膜球在觸發點釋放效果上優於泡 棉滾筒約                                                                     
- 40%，尤其針對深層肌群。這對運動按摩師來說是個好機會——你可以用這個數據來解釋「為什麼你的按摩比自己滾泡棉滾筒更有效」，強化專業說服力。<br><br><str 
- ong>建議內容方向：</strong>製作對比 Carousel，視覺化「什麼時候用滾筒、什麼時候需要專業按摩」。</p>                                                
-       </div>                                                                                                                                      
-      </div>                                                                                                                                       
-                                                                                                                                                   
-      <div id="example-carousel" class="example-content">                                                                                          
-       <div class="example-card">                                                                                                                  
-        <h4 class="carousel">📸 Carousel 腳本示例</h4>                                                                                             
-        <p>保留你原本的內容即可。</p>                                                                                                              
-       </div>                                                                                                                                      
-      </div>                                                                                                                                       
-                                                                                                                                                   
-      <div id="example-reels" class="example-content">                                                                                             
-       <div class="example-card">                                                                                                                  
-        <h4 class="reels">🎬 Reels 腳本示例</h4>                                                                                                   
-        <p>保留你原本的內容即可。</p>                                                                                                              
-       </div>                                                                                                                                      
-      </div>                                                                                                                                       
-                                                                                                                                                   
-      <div id="example-calendar" class="example-content">                                                                                          
-       <div class="example-card">                                                                                                                  
-        <h4 class="calendar">📅 月行事曆示例</h4>                                                                                                  
-        <p>保留你原本的內容即可。</p>                                                                                                              
-       </div>                                                                                                                                      
-      </div>                                                                                                                                       
-                                                                                                                                                   
-      <div id="example-competitor" class="example-content">                                                                                        
-       <div class="example-card">                                                                                                                  
-        <h4 class="competitor">🏆 競爭爆款分析示例</h4>                                                                                            
-        <p>保留你原本的內容即可。</p>                                                                                                              
-       </div>                                                                                                                                      
-      </div>                                                                                                                                       
-                                                                                                                                                   
-      <p class="example-update-note">🔄 內容每週一自動更新 ｜ 你的版本會根據你的產業與品牌設定客製化</p>                                           
-     </div>                                                                                                                                        
-    </div>                                                                                                                                         
-   </section>                                                                                                                                      
-                                                                                                                                                   
-   <!-- ═══════════ TESTIMONIALS ═══════════ -->                                                                                                   
-   <section>                                                                                                                                       
-    <div class="container">                                                                                                                        
-     <div class="section-label">Testimonials</div>                                                                                                 
-     <h2 class="section-title">不是更忙，而是更穩定</h2>                                                                                           
-     <p class="section-subtitle">來自不同產業的專業人士，正在用這套系統降低內容壓力、提高輸出穩定度，並讓品牌經營更有方向。</p>                    
-     <div class="testimonial-grid">                                                                                                                
-      <div class="testimonial-card">                                                                                                               
-       <div class="testimonial-stars">★★★★★</div>                                                                                                  
-       <p class="testimonial-text">「以前每週花 3 小時想內容，現在打開信箱就有了。腳本品質比我自己寫的還好，因為它真的懂我的產業脈絡。」</p>       
-       <div class="testimonial-author">                                                                                                            
-        <div class="testimonial-avatar">💆</div>                                                                                                   
-        <div>                                                                                                                                      
-         <div class="testimonial-name">Jasmine</div>                                                                                               
-         <div class="testimonial-role">運動按摩師</div>                                                                                            
-         <div class="testimonial-plan">入門方案</div>                                                                                              
-        </div>                                                                                                                                     
-       </div>                                                                                                                                      
-      </div>                                                                                                                                       
-      <div class="testimonial-card">                                                                                                               
-       <div class="testimonial-stars">★★★★★</div>                                                                                                  
-       <p class="testimonial-text">「競爭對手爆款 分析是我沒想到的驚喜。它讓我看到同業在跑什麼格式，然後我的 Reels 就從 200 觸及爆到 8000。」</p>  
-       <div class="testimonial-author">                                                                                                            
-        <div class="testimonial-avatar">🏋️</div>                                                                                                   
-        <div>                                                                                                                                      
-         <div class="testimonial-name">Alex</div>                                                                                                  
-         <div class="testimonial-role">健身教練</div>                                                                                              
-         <div class="testimonial-plan">成長方案</div>                                                                                              
-        </div>                                                                                                                                     
-       </div>                                                                                                                                      
-      </div>                                                                                                                                       
-      <div class="testimonial-card">                                                                                                               
-       <div class="testimonial-stars">★★★★★</div>                                                                                                  
-       <p class="testimonial-text">「月度行事曆讓 我的社群規劃從零到有。加上每個月跟 Karen 對話一次，帳號方向清楚很多，不再亂發內容了。」</p>      
-       <div class="testimonial-author">                                                                                                            
-        <div class="testimonial-avatar">🥗</div>                                                                                                   
-        <div>                                                                                                                                      
-         <div class="testimonial-name">小美</div>                                                                                                  
-         <div class="testimonial-role">營養師</div>                                                                                                
-         <div class="testimonial-plan">VIP 方案</div>                                                                                              
-        </div>                                                                                                                                     
-       </div>                                                                                                                                      
-      </div>                                                                                                                                       
-     </div>                                                                                                                                        
-    </div>                                                                                                                                         
-   </section>                                                                                                                                      
-                                                                                                                                                   
-   <!-- ═══════════ ABOUT + NEWSLETTER ═══════════ -->                                                                                             
-   <section>                                                                                                                                       
-    <div class="container">                                                                                                                        
-     <div class="about-grid">                                                                                                                      
-      <div>                                                                                                                                        
-       <div class="section-label">About</div>                                                                                                      
-       <div class="about-name">Karen Chen 凱倫</div>                                                                                               
-       <div class="about-title">AI Workflow Consultant ✦ Content Strategist</div>                                                                  
-       <p class="about-text">我是 Karen，專注於 AI                                                                                                 
- 工作流、內容系統與個人品牌成長。過去幾年，我一直在做一件事：把原本很花時間、很耗腦的內容流程，整理成可以穩定運作的系統。</p>                      
-       <p class="about-text">Weekly Content Engine 不是一個憑空出現的內容生成器。它是我把自己實際在用的 AI                                         
- 內容方法、趨勢追蹤邏輯與內容規劃流程，整理成你也能直接使用的版本。</p>                                                                            
-       <p class="about-text">我的目標很簡單：幫助更多有專業的人，不再被內容壓垮，而是用更輕鬆、更有系統的方式，持續建立自己的品牌影響力。</p>      
-       <div class="about-highlights">                                                                                                              
-        <div class="about-highlight">                                                                                                              
-         <h4>2+</h4>                                                                                                                               
-         <p>年 AI 工作流經驗</p>                                                                                                                   
-        </div>                                                                                                                                     
-        <div class="about-highlight">                                                                                                              
-         <h4>10+</h4>                                                                                                                              
-         <p>品牌自動化系統</p>                                                                                                                     
-        </div>                                                                                                                                     
-        <div class="about-highlight">                                                                                                              
-         <h4>500+</h4>                                                                                                                             
-         <p>AI 產出的內容</p>                                                                                                                      
-        </div>                                                                                                                                     
-       </div>                                                                                                                                      
-      </div>                                                                                                                                       
-                                                                                                                                                   
-      <div class="newsletter-section">                                                                                                             
-       <div class="section-label">Newsletter</div>                                                                                                 
-       <h3 class="section-title" style="font-size:24px;">📡 Weekly Signal</h3>                                                                     
-       <p style="color:var(--text-secondary);font-size:14px;">每週一封，分享 AI                                                                    
- 工作流、內容系統、品牌成長觀察，還有我真正在用的方法與判斷。<br>不是工具整理，而是寫給想把內容做得更聰明的你。</p>                                
-       <div class="newsletter-form">                                                                                                               
-        <input type="email" class="newsletter-input" placeholder="你的 Email" id="newsletter-email">                                               
-        <button class="newsletter-btn" onclick="subscribeNewsletter()">即將開放</button>                                                           
-       </div>                                                                                                                                      
-       <p style="color:var(--text-muted);font-size:12px;margin-top:12px;">已有 <span id="sub-count">80</span> 人訂閱 · 隨時可退訂</p>              
-      </div>                                                                                                                                       
-     </div>                                                                                                                                        
-    </div>                                                                                                                                         
-   </section>                                                                                                                                      
-                                                                                                                                                   
-   <!-- ═══════════ FAQ ═══════════ -->                                                                                                            
-   <section id="faq">                                                                                                                              
-    <div class="container">                                                                                                                        
-     <div class="section-label">FAQ</div>                                                                                                          
-     <h2 class="section-title">常見問題</h2>                                                                                                       
-     <div class="faq-list">                                                                                                                        
-      <div class="faq-item">                                                                                                                       
-       <div class="faq-question" onclick="toggleFaq(this)">                                                                                        
-        AI 產出的內容品質好嗎？                                                                                                                    
-        <span class="faq-arrow">+</span>                                                                                                           
-       </div>                                                                                                                                      
-       <div class="faq-answer">我們的系統不是一般的 ChatGPT 產出。每份內容都根據你的專業背景、本週最新產業趨勢和目標受眾量身                       
- 打造。大多數用戶只需要微調 10–20% 就能直接發佈。</div>                                                                                            
-      </div>                                                                                                                                       
-                                                                                                                                                   
-      <div class="faq-item">                                                                                                                       
-       <div class="faq-question" onclick="toggleFaq(this)">                                                                                        
-        試用期是怎麼運作的？                                                                                                                       
-        <span class="faq-arrow">+</span>                                                                                                           
-       </div>                                                                                                                                      
-       <div class="faq-answer">填完表單後，你會進入 7 天免費試用期。試用期間系統每天早上 8:00                                                      
- 自動把內容包寄到你的信箱，讓你在短時間內快速感受這套系統的內容品 質與節奏。正式訂閱後改為每週一早上 8:00 寄送。</div>                             
-      </div>                                                                                                                                       
-                                                                                                                                                   
-      <div class="faq-item">                                                                                                                       
-       <div class="faq-question" onclick="toggleFaq(this)">                                                                                        
-        三個方案怎麼選？                                                                                                                           
-        <span class="faq-arrow">+</span>                                                                                                           
-       </div>                                                                                                                                      
-       <div class="faq-answer">入門方案適合剛開始想穩定輸 出內容的人；成長方案適合已經有在經營內容、想提升效率與策略節奏的 人；VIP                 
- 方案適合把內容當成事業在做、希望搭配 Karen 一起優化成長策略的人。</div>                                                                           
-      </div>                                                                                                                                       
-                                                                                                                                                   
-      <div class="faq-item">                                                                                                                       
-       <div class="faq-question" onclick="toggleFaq(this)">                                                                                        
-        「競爭對手爆款分析」是怎麼做的？                                                                                                           
-        <span class="faq-arrow">+</span>                                                                                                           
-       </div>                                                                                                                                      
-       <div class="faq-answer">系統會根據你的產業關鍵字， 分析本週趨勢中哪些內容格式、Hook                                                         
- 公式和主題方向目前互動率最高。不是直接抓某個帳號的後台數據，而是分析「什麼樣的內容在你的產業最容易爆」，再給你可直接套用的方向建議。</div>        
-      </div>                                                                                                                                       
-                                                                                                                                                   
-      <div class="faq-item">                                                                                                                       
-       <div class="faq-question" onclick="toggleFaq(this)">                                                                                        
-        VIP 方案的 1:1 諮詢是什麼形式？                                                                                                            
-        <span class="faq-arrow">+</span>                                                                                                           
-       </div>                                                                                                                                      
-       <div class="faq-answer">每月一次 60 分鐘線上視訊諮詢（Zoom / Google Meet）。Karen                                                           
- 會提前看你當月的內容表現，針對帳號方向、內容策略和成長瓶頸給出具 體建議。不是制式 SOP，而是針對你的狀況一起調整。</div>                           
-      </div>                                                                                                                                       
-                                                                                                                                                   
-      <div class="faq-item">                                                                                                                       
-       <div class="faq-question" onclick="toggleFaq(this)">                                                                                        
-        可以隨時取消嗎？                                                                                                                           
-        <span class="faq-arrow">+</span>                                                                                                           
-       </div>                                                                                                                                      
-       <div class="faq-answer">可以。沒有綁約，隨時都能取消。已付款的月份會服務到月底。</div>                                                      
-      </div>                                                                                                                                       
-                                                                                                                                                   
-      <div class="faq-item">                                                                                                                       
-       <div class="faq-question" onclick="toggleFaq(this)">                                                                                        
-        支援哪些產業？                                                                                                                             
-        <span class="faq-arrow">+</span>                                                                                                           
-       </div>                                                                                                                                      
-       <div                                                                                                                                        
- class="faq-answer">任何有持續資訊流動、趨勢可追蹤的專業領域都適合。目前使用者涵蓋健身教練、營養師、行銷顧問、設計師、心理師、室內設計師等。只要你 
- 的產業有內容機會，這套系統就能幫你整理成更好用的工作流。</div>                                                                                    
-      </div>                                                                                                                                       
-                                                                                                                                                   
-      <div class="faq-item">                                                                                                                       
-       <div class="faq-question" onclick="toggleFaq(this)">                                                                                        
-        跟直接用 ChatGPT 有什麼不同？                                                                                                              
-        <span class="faq-arrow">+</span>                                                                                                           
-       </div>                                                                                                                                      
-       <div class="faq-answer">最大的差別不是「有沒有用 AI」，而是你有沒有一套真的能持續運作的內容系統。Weekly Content Engine                      
- 幫你自動追蹤產業趨勢、結合你的品牌語氣與受眾需求，直接整理成可用 內容腳本與規劃。你買到的不是一堆                                                 
- prompt，而是一套能幫你穩定輸出、持續累積品牌影響力的工作流。</div>                                                                                
-      </div>                                                                                                                                       
-     </div>                                                                                                                                        
-    </div>                                                                                                                                         
-   </section>                                                                                                                                      
-                                                                                                                                                   
-   <!-- ═══════════ FINAL CTA ═══════════ -->                                                                                                      
-   <section style="text-align:center;padding:80px 0;">                                                                                             
-    <div class="container">                                                                                                                        
-     <h2 class="section-title">準備好讓內容不再靠靈感硬撐了嗎？</h2>                                                                               
-     <p style="color:var(--text-secondary);font-size:16px;margin-bottom:8px;">只要 3 分鐘填寫你的專業資料，明天早上                                
- 8:00，你就會收到第一份專屬內容包。</p>                                                                                                            
-     <p style="color:var(--text-secondary);font-size:16px;margin-bottom:8px;">不是更多資訊，而是一套能幫你穩定輸出、持續累積的內容系統。</p>       
-     <p style="color:var(--cyan);font-size:14px;margin-bottom:32px;">🎁 試用期間體驗完整成長方案功能，免費開始，覺得適合再訂閱</p>                 
-     <a href="https://forms.gle/i6vvD7tGzcah3ZYw5" class="hero-cta">立即開始 7 天免費試用 →</a>                                                    
-    </div>                                                                                                                                         
-   </section>                                                                                                                                      
-                                                                                                                                                   
-   <!-- ═══════════ FOOTER ═══════════ -->                                                                                                         
-   <footer>                                                                                                                                        
-    <div class="container">                                                                                                                        
-     <p>Weekly Content Engine by <a href="https://www.instagram.com/karen_contentbestie/" target="_blank">@karen_contentbestie</a></p>             
-     <p style="margin-top:8px;">© 2026 Karen Chen. All rights reserved.</p>                                                                        
-    </div>                                                                                                                                         
-   </footer>                                                                                                                                       
-                                                                                                                                                   
-   <script>                                                                                                                                        
-   function toggleFaq(el) {                                                                                                                        
-    el.parentElement.classList.toggl e('open');                                                                                                    
-   }                                                                                                                                               
-                                                                                                                                                   
-   function showExample(id, btn) {                                                                                                                 
-    document.querySelectorAll('.exam ple-content').forEach(el => el.classList.remove('active'));                                                   
-    document.querySelectorAll('.exam ple-tab').forEach(el => el.classList.remove('active'));                                                       
-    document.getElementById('example -' + id).classList.add('active');                                                                             
-    btn.classList.add('active');                                                                                                                   
-   }                                                                                                                                               
-                                                                                                                                                   
-   function subscribeNewsletter() {                                                                                                                
-    alert('Weekly Signal 訂閱入口即將開放 📡');                                                                                                    
-   }                                                                                                                                               
-                                                                                                                                                   
-   const SUBSCRIBER_SCRIPT_URL = 'YOUR_GOOGLE_APPS_SCRIPT_URL';                                                                                    
-                                                                                                                                                   
-   async function fetchSubscriberCount() {                                                                                                         
-    try {                                                                                                                                          
-     if (SUBSCRIBER_SCRIPT_URL === 'YOUR_GOOGLE_APPS_SCRIPT_URL') return;                                                                          
-     const resp = await fetch(SUBSCRIBER_SCRIPT_URL);                                                                                              
-     const data = await resp.json();                                                                                                               
-     const count = data.count || 0;                                                                                                                
-     document.getElementById('stat-us ers').textContent = count + '+';                                                                             
-     document.getElementById('sub-cou nt').textContent = count;                                                                                    
-    } catch (e) {}                                                                                                                                 
-   }                                                                                                                                               
-                                                                                                                                                   
-   window.addEventListener('DOMCont entLoaded', fetchSubscriberCount);                                                                             
-   </script>                                                                                                                                       
-   </body>                                                                                                                                         
-   </html>                                                                                                                                         
- ```       
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Weekly Content Engine｜把 AI 變成你的內容團隊</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+ --bg-dark: #0a0a0f;
+ --bg-card: #13131a;
+ --bg-card-hover: #1a1a25;
+ --accent: #f0c040;
+ --accent-glow: rgba(240, 192, 64, 0.15);
+ --accent-dim: #c9a033;
+ --text-primary: #e8e6e1;
+ --text-secondary: #8a8890;
+ --text-muted: #5a5860;
+ --border: #2a2a35;
+ --green: #34d399;
+ --pink: #f472b6;
+ --blue: #60a5fa;
+ --purple: #a78bfa;
+ --cyan: #22d3ee;
+ --gradient-accent: linear-gradient(135deg, #f0c040 0%, #f59e0b 50%, #ef4444 100%);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+ font-family: 'Noto Sans TC', 'DM Sans', sans-serif;
+ background: var(--bg-dark);
+ color: var(--text-primary);
+ line-height: 1.7;
+ overflow-x: hidden;
+}
+body::before {
+ content: '';
+ position: fixed;
+ top: 0; left: 0; width: 100%; height: 100%;
+ background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+ pointer-events: none;
+ z-index: 9999;
+}
+.container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+.hero {
+ min-height: 100vh;
+ display: flex;
+ align-items: center;
+ position: relative;
+ padding: 120px 0 80px;
+}
+.hero::before {
+ content: '';
+ position: absolute;
+ top: -200px; right: -300px;
+ width: 800px; height: 800px;
+ background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+ pointer-events: none;
+}
+.hero-content { position: relative; z-index: 1; }
+.hero-badge {
+ display: inline-block;
+ padding: 6px 16px;
+ border: 1px solid var(--accent-dim);
+ border-radius: 100px;
+ font-size: 13px;
+ color: var(--accent);
+ letter-spacing: 2px;
+ text-transform: uppercase;
+ margin-bottom: 32px;
+ animation: fadeInUp 0.8s ease;
+}
+.hero h1 {
+ font-family: 'Playfair Display', serif;
+ font-size: clamp(42px, 7vw, 80px);
+ font-weight: 900;
+ line-height: 1.1;
+ margin-bottom: 24px;
+ animation: fadeInUp 0.8s ease 0.1s both;
+}
+.hero h1 .accent {
+ background: var(--gradient-accent);
+ -webkit-background-clip: text;
+ -webkit-text-fill-color: transparent;
+ background-clip: text;
+}
+.hero p {
+ font-size: 18px;
+ color: var(--text-secondary);
+ max-width: 580px;
+ margin-bottom: 12px;
+ animation: fadeInUp 0.8s ease 0.2s both;
+}
+.hero-trial-note {
+ font-size: 14px;
+ color: var(--cyan);
+ margin-bottom: 32px;
+ animation: fadeInUp 0.8s ease 0.25s both;
+}
+.hero-trial-note span {
+ background: rgba(34, 211, 238, 0.1);
+ border: 1px solid rgba(34, 211, 238, 0.3);
+ border-radius: 6px;
+ padding: 4px 12px;
+ display: inline-block;
+}
+.hero-cta {
+ display: inline-flex;
+ align-items: center;
+ gap: 12px;
+ padding: 16px 36px;
+ background: var(--accent);
+ color: var(--bg-dark);
+ text-decoration: none;
+ border-radius: 8px;
+ font-weight: 700;
+ font-size: 16px;
+ transition: all 0.3s;
+ animation: fadeInUp 0.8s ease 0.3s both;
+}
+.hero-cta:hover { transform: translateY(-2px); box-shadow: 0 8px 30px var(--accent-glow); }
+.hero-stats {
+ display: flex;
+ gap: 48px;
+ margin-top: 64px;
+ animation: fadeInUp 0.8s ease 0.4s both;
+}
+.hero-stat h3 {
+ font-family: 'Playfair Display', serif;
+ font-size: 36px;
+ color: var(--accent);
+}
+.hero-stat p { font-size: 13px; color: var(--text-muted); margin: 0; }
+section { padding: 100px 0; }
+.section-label {
+ font-size: 12px;
+ letter-spacing: 3px;
+ text-transform: uppercase;
+ color: var(--accent);
+ margin-bottom: 16px;
+}
+.section-title {
+ font-family: 'Playfair Display', serif;
+ font-size: clamp(28px, 4vw, 42px);
+ font-weight: 700;
+ margin-bottom: 16px;
+}
+.section-subtitle {
+ color: var(--text-secondary);
+ font-size: 16px;
+ max-width: 620px;
+ margin-bottom: 48px;
+}
+.steps-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.step-card {
+ background: var(--bg-card);
+ border: 1px solid var(--border);
+ border-radius: 12px;
+ padding: 32px;
+ transition: all 0.3s;
+}
+.step-card:hover {
+ background: var(--bg-card-hover);
+ border-color: var(--accent-dim);
+ transform: translateY(-4px);
+}
+.step-number {
+ font-family: 'Playfair Display', serif;
+ font-size: 48px;
+ color: var(--accent);
+ opacity: 0.3;
+ line-height: 1;
+ margin-bottom: 16px;
+}
+.step-card h3 { font-size: 18px; margin-bottom: 8px; }
+.step-card p { color: var(--text-secondary); font-size: 14px; }
+.step-badge {
+ display: inline-block;
+ margin-top: 10px;
+ padding: 3px 10px;
+ background: rgba(34, 211, 238, 0.1);
+ border: 1px solid rgba(34, 211, 238, 0.3);
+ border-radius: 100px;
+ font-size: 11px;
+ color: var(--cyan);
+}
+.pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; align-items: start; }
+.price-card {
+ background: var(--bg-card);
+ border: 1px solid var(--border);
+ border-radius: 16px;
+ padding: 36px;
+ transition: all 0.3s;
+ position: relative;
+}
+.price-card.featured {
+ border-color: var(--accent);
+ box-shadow: 0 0 60px var(--accent-glow);
+}
+.price-card.featured::before {
+ content: '最受歡迎';
+ position: absolute;
+ top: -12px;
+ left: 50%;
+ transform: translateX(-50%);
+ background: var(--accent);
+ color: var(--bg-dark);
+ padding: 4px 16px;
+ border-radius: 100px;
+ font-size: 12px;
+ font-weight: 700;
+}
+.price-card:hover { transform: translateY(-4px); }
+.price-icon { font-size: 32px; margin-bottom: 16px; }
+.price-name { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+.price-amount {
+ font-family: 'Playfair Display', serif;
+ font-size: 42px;
+ font-weight: 900;
+ color: var(--accent);
+}
+.price-amount span { font-size: 16px; color: var(--text-muted); font-family: 'Noto Sans TC', sans-serif; font-weight: 400; }
+.price-desc { color: var(--text-secondary); font-size: 14px; margin: 12px 0 24px; min-height: 66px; }
+.price-features { list-style: none; margin-bottom: 32px; }
+.price-features li {
+ padding: 8px 0;
+ font-size: 14px;
+ color: var(--text-secondary);
+ border-bottom: 1px solid var(--border);
+ display: flex;
+ gap: 8px;
+ align-items: flex-start;
+}
+.price-features li::before { content: '✓'; color: var(--green); font-weight: bold; flex-shrink: 0; }
+.price-features li.disabled { opacity: 0.3; }
+.price-features li.disabled::before { content: '—'; color: var(--text-muted); }
+.price-features li.highlight { color: var(--accent); }
+.price-features li.highlight::before { content: '★'; color: var(--accent); }
+.price-btn {
+ display: block;
+ width: 100%;
+ padding: 14px;
+ text-align: center;
+ border-radius: 8px;
+ text-decoration: none;
+ font-weight: 700;
+ font-size: 15px;
+ transition: all 0.3s;
+ border: 1px solid var(--border);
+ color: var(--text-primary);
+ background: transparent;
+ cursor: pointer;
+ font-family: 'Noto Sans TC', sans-serif;
+}
+.price-btn:hover { border-color: var(--accent); color: var(--accent); }
+.price-card.featured .price-btn { background: var(--accent); color: var(--bg-dark); border: none; }
+.price-card.featured .price-btn:hover { box-shadow: 0 4px 20px var(--accent-glow); }
+.price-compare { text-align: center; margin-top: 40px; color: var(--text-muted); font-size: 13px; }
+.price-compare a { color: var(--accent); text-decoration: none; cursor: pointer; }
+.example-section {
+ background: var(--bg-card);
+ border-radius: 16px;
+ padding: 48px;
+ margin-top: 48px;
+ border: 1px solid var(--border);
+}
+.example-tabs { display: flex; gap: 8px; margin-bottom: 32px; flex-wrap: wrap; }
+.example-tab {
+ padding: 8px 20px;
+ border-radius: 100px;
+ border: 1px solid var(--border);
+ background: transparent;
+ color: var(--text-secondary);
+ cursor: pointer;
+ font-size: 13px;
+ font-family: 'Noto Sans TC', sans-serif;
+ transition: all 0.3s;
+ display: flex;
+ align-items: center;
+ gap: 6px;
+}
+.example-tab.active, .example-tab:hover {
+ border-color: var(--accent);
+ color: var(--accent);
+ background: var(--accent-glow);
+}
+.example-tab .plan-badge {
+ font-size: 10px;
+ padding: 1px 7px;
+ border-radius: 100px;
+ background: rgba(167, 139, 250, 0.15);
+ color: var(--purple);
+ border: 1px solid rgba(167, 139, 250, 0.3);
+}
+.example-content { display: none; animation: fadeIn 0.4s ease; }
+.example-content.active { display: block; }
+.example-card {
+ background: var(--bg-dark);
+ border-radius: 12px;
+ padding: 24px;
+ margin-bottom: 16px;
+ border: 1px solid var(--border);
+}
+.example-card h4 {
+ font-size: 13px;
+ margin-bottom: 12px;
+ text-transform: uppercase;
+ letter-spacing: 1px;
+ display: flex;
+ align-items: center;
+ gap: 8px;
+}
+.example-card h4.trend { color: var(--accent); }
+.example-card h4.carousel { color: var(--green); }
+.example-card h4.reels { color: var(--pink); }
+.example-card h4.calendar { color: var(--blue); }
+.example-card h4.competitor { color: var(--purple); }
+.example-card p { color: var(--text-secondary); font-size: 14px; line-height: 1.9; }
+.cal-week {
+ display: grid;
+ grid-template-columns: 80px 1fr 100px 120px;
+ gap: 12px;
+ align-items: center;
+ padding: 12px 0;
+ border-bottom: 1px solid var(--border);
+ font-size: 13px;
+}
+.cal-week:last-child { border-bottom: none; }
+.cal-week-label { color: var(--accent); font-weight: 700; font-size: 12px; }
+.cal-topic { color: var(--text-primary); }
+.cal-format {
+ padding: 3px 10px;
+ border-radius: 100px;
+ font-size: 11px;
+ text-align: center;
+}
+.cal-format.carousel { background: rgba(52, 211, 153, 0.1); color: var(--green); border: 1px solid rgba(52, 211, 153, 0.3); }
+.cal-format.reels { background: rgba(244, 114, 182, 0.1); color: var(--pink); border: 1px solid rgba(244, 114, 182, 0.3); }
+.cal-platform { color: var(--text-muted); font-size: 12px; }
+.competitor-card {
+ background: linear-gradient(135deg, rgba(167, 139, 250, 0.05), rgba(96, 165, 250, 0.05));
+ border: 1px solid rgba(167, 139, 250, 0.2);
+ border-radius: 10px;
+ padding: 20px;
+ margin-bottom: 12px;
+}
+.competitor-card .direction-num {
+ font-family: 'Playfair Display', serif;
+ font-size: 28px;
+ color: var(--purple);
+ opacity: 0.4;
+ float: left;
+ margin-right: 12px;
+ line-height: 1;
+}
+.competitor-card h5 { font-size: 15px; color: var(--text-primary); margin-bottom: 6px; }
+.competitor-card p { font-size: 13px; color: var(--text-secondary); line-height: 1.7; }
+.example-update-note { text-align: center; color: var(--text-muted); font-size: 12px; margin-top: 16px; }
+.testimonial-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.testimonial-card {
+ background: var(--bg-card);
+ border: 1px solid var(--border);
+ border-radius: 12px;
+ padding: 32px;
+}
+.testimonial-stars { color: var(--accent); font-size: 14px; margin-bottom: 16px; letter-spacing: 2px; }
+.testimonial-text {
+ color: var(--text-secondary);
+ font-size: 15px;
+ line-height: 1.8;
+ margin-bottom: 20px;
+ font-style: italic;
+}
+.testimonial-author { display: flex; align-items: center; gap: 12px; }
+.testimonial-avatar {
+ width: 40px; height: 40px;
+ border-radius: 50%;
+ background: var(--gradient-accent);
+ display: flex; align-items: center; justify-content: center;
+ font-size: 16px;
+}
+.testimonial-name { font-size: 14px; font-weight: 500; }
+.testimonial-role { font-size: 12px; color: var(--text-muted); }
+.testimonial-plan { font-size: 11px; color: var(--accent); margin-top: 2px; }
+.about-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: 64px; align-items: center; }
+.about-name { font-family: 'Playfair Display', serif; font-size: 28px; margin-bottom: 8px; }
+.about-title { color: var(--accent); font-size: 14px; letter-spacing: 1px; margin-bottom: 24px; }
+.about-text { color: var(--text-secondary); font-size: 15px; margin-bottom: 16px; }
+.about-highlights { display: flex; gap: 24px; margin-top: 32px; }
+.about-highlight { text-align: center; }
+.about-highlight h4 { font-family: 'Playfair Display', serif; font-size: 28px; color: var(--accent); }
+.about-highlight p { font-size: 12px; color: var(--text-muted); }
+.newsletter-section {
+ background: var(--bg-card);
+ border: 1px solid var(--border);
+ border-radius: 16px;
+ padding: 64px;
+ text-align: center;
+ margin-top: 0;
+}
+.newsletter-form { display: flex; gap: 12px; max-width: 480px; margin: 32px auto 0; }
+.newsletter-input {
+ flex: 1;
+ padding: 14px 20px;
+ background: var(--bg-dark);
+ border: 1px solid var(--border);
+ border-radius: 8px;
+ color: var(--text-primary);
+ font-size: 15px;
+ font-family: 'Noto Sans TC', sans-serif;
+ outline: none;
+ transition: border-color 0.3s;
+}
+.newsletter-input:focus { border-color: var(--accent); }
+.newsletter-btn {
+ padding: 14px 28px;
+ background: var(--accent);
+ color: var(--bg-dark);
+ border: none;
+ border-radius: 8px;
+ font-weight: 700;
+ font-size: 15px;
+ cursor: pointer;
+ font-family: 'Noto Sans TC', sans-serif;
+ transition: all 0.3s;
+ white-space: nowrap;
+}
+.newsletter-btn:hover { box-shadow: 0 4px 20px var(--accent-glow); }
+.faq-list { max-width: 700px; }
+.faq-item { border-bottom: 1px solid var(--border); padding: 20px 0; }
+.faq-question {
+ font-size: 16px;
+ font-weight: 500;
+ cursor: pointer;
+ display: flex;
+ justify-content: space-between;
+ align-items: center;
+ transition: color 0.3s;
+}
+.faq-question:hover { color: var(--accent); }
+.faq-arrow { transition: transform 0.3s; font-size: 20px; color: var(--text-muted); }
+.faq-item.open .faq-arrow { transform: rotate(45deg); color: var(--accent); }
+.faq-answer {
+ max-height: 0;
+ overflow: hidden;
+ transition: max-height 0.4s ease, padding 0.4s ease;
+ color: var(--text-secondary);
+ font-size: 14px;
+ line-height: 1.8;
+}
+.faq-item.open .faq-answer { max-height: 400px; padding-top: 16px; }
+footer {
+ padding: 48px 0;
+ border-top: 1px solid var(--border);
+ text-align: center;
+ color: var(--text-muted);
+ font-size: 13px;
+}
+footer a { color: var(--accent); text-decoration: none; }
+@keyframes fadeInUp {
+ from { opacity: 0; transform: translateY(24px); }
+ to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+ from { opacity: 0; }
+ to { opacity: 1; }
+}
+@media (max-width: 768px) {
+ .steps-grid, .pricing-grid, .testimonial-grid { grid-template-columns: 1fr; }
+ .about-grid { grid-template-columns: 1fr; }
+ .hero-stats { flex-direction: column; gap: 24px; }
+ .newsletter-form { flex-direction: column; }
+ .example-section { padding: 24px; }
+ .newsletter-section { padding: 32px 24px; }
+ .about-highlights { flex-wrap: wrap; }
+ .cal-week { grid-template-columns: 60px 1fr; }
+ .cal-format, .cal-platform { display: none; }
+}
+</style>
+</head>
+<body>
+<section class="hero">
+ <div class="container">
+  <div class="hero-content">
+   <div class="hero-badge">AI-Powered Content System</div>
+   <h1>把 AI 變成你的<br><span class="accent">內容團隊</span></h1>
+   <p>為創作者、顧問、教練與知識工作者打造的 AI 內容系統。自動追蹤產業趨勢、生成客製化內容腳本與月度規劃，幫你更穩定發文、建立影響力，不再每週從零開始想內容。</p>
+   <p class="hero-trial-note"><span>🎁 7 天免費試用：每天早上 8:00 自動送達 ｜ 正式訂閱後每週一寄送</span></p>
+   <a href="https://forms.gle/i6vvD7tGzcah3ZYw5" class="hero-cta">立即開始 7 天免費試用 →</a>
+   <div class="hero-stats">
+    <div class="hero-stat"><h3 id="stat-users">80+</h3><p>訂閱用戶</p></div>
+    <div class="hero-stat"><h3>3個/週</h3><p>產業趨勢分析</p></div>
+    <div class="hero-stat"><h3>30分鐘+</h3><p>每週省下的內容規劃時間</p></div>
+   </div>
+  </div>
+ </div>
+</section>
+<section>
+ <div class="container">
+  <div class="section-label">How it works</div>
+  <h2 class="section-title">三步驟，讓內容自動進入你的工作流</h2>
+  <div class="steps-grid">
+   <div class="step-card">
+    <div class="step-number">01</div>
+    <h3>填寫你的專業資料</h3>
+    <p>花 3 分鐘告訴我們你的產業、受眾、品牌語氣與內容方向。只需填一次，系統就會記住你的設定。</p>
+   </div>
+   <div class="step-card">
+    <div class="step-number">02</div>
+    <h3>AI 自動追蹤你的產業趨勢</h3>
+    <p>系統持續追蹤你所在領域的熱門議題、產業變化與內容切角，結合你的專業背景與品牌語氣，整理成可直接使用的內容方向。</p>
+   </div>
+   <div class="step-card">
+    <div class="step-number">03</div>
+    <h3>每週收到可直接使用的內容包</h3>
+    <p>信箱裡會出現為你客製化的趨勢分析、Carousel 腳本、Reels 腳本與內容規劃，打開就能開始用。</p>
+    <div class="step-badge">🎁 試用期間每天早上 8:00</div>
+   </div>
+  </div>
+ </div>
+</section>
+<section id="pricing">
+ <div class="container">
+  <div class="section-label">Pricing</div>
+  <h2 class="section-title">選擇最適合你現在階段的方案</h2>
+  <p class="section-subtitle">所有方案都包含 7 天免費試用。試用期間每天早上 8:00 自動送達，幫你快速判斷這套系統適不適合你。</p>
+  <div class="pricing-grid">
+   <div class="price-card">
+    <div class="price-icon">🚀</div>
+    <div class="price-name">入門方案</div>
+    <div class="price-amount">699<span> /月</span></div>
+    <p class="price-desc">適合剛開始想穩定輸出內容、不想再每週卡題目的個人品牌經營者。</p>
+    <ul class="price-features">
+     <li>每週 3 個產業趨勢分析</li><li>專業解讀 + 內容靈感方向</li><li>每週 Carousel 腳本（7-8張）</li><li>每週 Reels 腳本（30-60秒）</li><li>完整 Hashtags 策略</li><li class="disabled">Threads + Facebook 跨平台版</li><li class="disabled">月度內容行事曆</li><li class="disabled">競爭對手爆款分析</li><li class="disabled">每月 1:1 顧問諮詢</li>
+    </ul>
+    <a href="https://forms.gle/i6vvD7tGzcah3ZYw5" class="price-btn">7 天免費試用</a>
+   </div>
+   <div class="price-card featured">
+    <div class="price-icon">📈</div>
+    <div class="price-name">成長方案</div>
+    <div class="price-amount">1,199<span> /月</span></div>
+    <p class="price-desc">適合已經在經營內容，想提升效率、加快成長、讓內容更有節奏的人。</p>
+    <ul class="price-features">
+     <li>含入門方案所有內容</li><li>Threads + Facebook 跨平台改寫</li><li>月度內容行事曆（4週完整規劃）</li><li class="highlight">每週競爭對手爆款分析（3個方向）</li><li class="highlight">高互動 Hook 公式建議</li><li class="disabled">每月 1:1 顧問諮詢</li>
+    </ul>
+    <a href="https://forms.gle/i6vvD7tGzcah3ZYw5" class="price-btn">免費試用成長方案</a>
+   </div>
+   <div class="price-card">
+    <div class="price-icon">👑</div>
+    <div class="price-name">VIP 方案</div>
+    <div class="price-amount">2,499<span> /月</span></div>
+    <p class="price-desc">適合把內容當成事業在經營，想搭配 Karen 的策略判斷一起優化的人。</p>
+    <ul class="price-features">
+     <li>含成長方案所有內容</li><li class="highlight">每月 60 分鐘 Karen 1:1 諮詢</li><li class="highlight">個人化帳號成長策略</li><li class="highlight">內容數據覆盤 + 方向調整</li><li>優先支援（24小時內回應）</li>
+    </ul>
+    <a href="https://forms.gle/i6vvD7tGzcah3ZYw5" class="price-btn">立即預約諮詢</a>
+   </div>
+  </div>
+  <p class="price-compare">不確定哪個方案適合你？<a onclick="document.getElementById('faq').scrollIntoView({behavior:'smooth'})">看常見問題</a> 或直接先試用，感受這套內容系統適不適合你。</p>
+ </div>
+</section>
+<section>
+ <div class="container">
+  <div class="section-label">This week's preview</div>
+  <h2 class="section-title">本週內容範例</h2>
+  <p class="section-subtitle">以下是系統為「運動按摩師」產出的真實內容範例。你的版本會根據你的產業、受眾與品牌語氣客製化調整。</p>
+  <div class="example-section">
+   <div class="example-tabs">
+    <button class="example-tab active" onclick="showExample('trends', this)">📡 產業趨勢</button>
+    <button class="example-tab" onclick="showExample('carousel', this)">📸 Carousel 腳本</button>
+    <button class="example-tab" onclick="showExample('reels', this)">🎬 Reels 腳本</button>
+    <button class="example-tab" onclick="showExample('calendar', this)">📅 月行事曆</button>
+    <button class="example-tab" onclick="showExample('competitor', this)">🏆 競爭爆款分析 <span class="plan-badge">成長以上</span></button>
+   </div>
+   <div id="example-trends" class="example-content active">
+    <div class="example-card"><h4 class="trend">📡 趨勢 1 ｜ 筋膜球 vs 泡棉滾筒：最新研究怎麼說</h4><p>本週運動醫學期刊指出，高密度筋膜球在觸發點釋放效果上優於泡棉滾筒約 40%，尤其針對深層肌群。這對運動按摩師來說是個好機會——你可以用這個數據來解釋「為什麼你的按摩比自己滾泡棉滾筒更有效」，強化專業說服力。<br><br><strong>建議內容方向：</strong>製作對比 Carousel，視覺化「什麼時候用滾筒、什麼時候需要專業按摩」。</p></div>
+    <div class="example-card"><h4 class="trend">📡 趨勢 2 ｜ 「積極靜態恢復」崛起，取代高強度訓練</h4><p>越來越多職業運動員改採輕量流動性動作 + 軟組織按摩的組合恢復策略，研究顯示比純靜態拉伸快 30% 恢復到基準表現。這個趨勢正在從職業圈往健身愛好者擴散，目前討論熱度上升 65%。<br><br><strong>建議內容方向：</strong>Reels 示範 3 個「積極靜態恢復」動作，順帶說明按摩師如何搭配這套流程。</p></div>
+    <div class="example-card"><h4 class="trend">📡 趨勢 3 ｜ 運動後 72 小時黃金窗口</h4><p>肌肉損傷修復的關鍵研究顯示，高強度訓練後 24-72 小時內進行主動式軟組織按摩介入，能顯著加速乳酸代謝和細胞修復速度。許多人只知道「要按摩」，不知道「什麼時候按最有效」。<br><br><strong>建議內容方向：</strong>倒數計時概念的 Carousel：「你訓練後的 72 小時你做對了嗎？」</p></div>
+   </div>
+   <div id="example-carousel" class="example-content">
+    <div class="example-card"><h4 class="carousel">📸 Carousel 腳本｜「3 個按摩前你一定忘了做的事」</h4><p><strong>封面（第1張）</strong><br>✕ 你做按摩前，一定漏了這 3 步<br>副標：做錯了，按摩效果打對折<br><br><strong>第2張｜常見錯誤①</strong><br>按摩前大量喝水 ❌<br>→ 大量水分讓組織變得「水腫」，壓力感倍增，反而不舒服<br>✓ 正確：按摩前 2 小時適量補水，按摩後再大量補充<br><br><strong>第3張｜常見錯誤②</strong><br>激烈運動後立刻按摩 ❌<br>→ 急性發炎期的肌肉不適合深層施壓，可能加重微撕裂<br>✓ 正確：運動後冷卻 30-60 分鐘，心率恢復再來<br><br><strong>第4張｜常見錯誤③</strong><br>有傷還硬撐按摩 ❌<br>→ 急性扭傷、骨折恢復期，按摩可能讓傷況惡化<br>✓ 正確：有明顯紅腫熱痛，先冰敷休息，告訴按摩師實際狀況<br><br><strong>第5-7張｜正確準備清單</strong><br>✅ 按摩前 24 小時：避免高強度訓練<br>✅ 按摩當天：穿著舒適寬鬆衣物<br>✅ 按摩前：如實告知身體狀況<br><br><strong>第8張｜CTA</strong><br>想讓每次按摩效果最大化？<br>預約前先傳訊息給我，我幫你規劃最適合的療程 ➡<br><br><strong>Caption：</strong><br>按摩不只是「推推推」，準備對了才事半功倍✨ 你上次按摩前有做到這些嗎？留言 1-3 告訴我你忘了哪個！</p><div style="margin-top:16px;padding:12px 16px;background:rgba(52,211,153,0.05);border-radius:8px;border:1px solid rgba(52,211,153,0.2);"><p style="font-size:12px;color:var(--green);">#運動按摩 #筋膜放鬆 #按摩師日常 #運動恢復 #健康生活 #sportsmassage #肌肉放鬆 #selfcare</p></div></div>
+   </div>
+   <div id="example-reels" class="example-content">
+    <div class="example-card"><h4 class="reels">🎬 Reels 腳本｜「你以為在放鬆，其實在傷害肌肉」</h4><p><strong>0–3秒｜Hook（鏡頭對著你，手指搖擺）</strong><br>「90% 的人運動後，第一步就做錯了。」<br>畫面建議：貼近臉部，眼神直視鏡頭<br><br><strong>3–15秒｜痛點</strong><br>「很多人肌肉痠了，第一反應就是拉伸。但如果是急性的肌肉疲勞，立刻做靜態拉伸反而可能加重微撕裂——尤其是高強度訓練後的 30 分鐘內。」<br>畫面建議：邊說邊示範「不對的拉伸動作」打 ❌<br><br><strong>15–40秒｜教學</strong><br>「正確步驟是這樣：<br>① 先走動 5 分鐘，讓心率自然降下來<br>② 補充水分 + 電解質<br>③ 再做輕柔的流動性動作，不是靜態撐住不動<br>最後，如果有按摩師幫你做軟組織放鬆，效果是靜態拉伸的 2 倍以上。」<br>畫面建議：邊說邊示範三個步驟，打上字幕<br><br><strong>40–50秒｜總結</strong><br>「這個順序對了，你隔天痠痛感至少少 50%。」<br>畫面建議：比 👍，輕鬆表情<br><br><strong>50–60秒｜CTA</strong><br>「想學更多恢復知識？追蹤我，每週都有新方法！」<br>畫面建議：直視鏡頭，揮手<br><br><strong>Caption：</strong><br>很多痠痛不是訓練造成的，是恢復方式錯了 💡 你之前都怎麼做的？留言告訴我 👇</p><div style="margin-top:16px;padding:12px 16px;background:rgba(244,114,182,0.05);border-radius:8px;border:1px solid rgba(244,114,182,0.2);"><p style="font-size:12px;color:var(--pink);">#運動恢復 #健身 #按摩師 #肌肉恢復 #運動知識 #recovery #sportsmassage #健康tips</p></div></div>
+   </div>
+   <div id="example-calendar" class="example-content">
+    <div class="example-card"><h4 class="calendar">📅 四月份內容行事曆｜運動按摩師版</h4><div style="margin-bottom:16px;"><div class="cal-week" style="font-size:11px;color:var(--text-muted);font-weight:700;padding-bottom:8px;border-bottom:1px solid var(--border);"><span></span><span>建議主題</span><span>格式</span><span>平台</span></div><div class="cal-week"><span class="cal-week-label">第1週<br>3/31–4/4</span><span class="cal-topic">「你可能根本不了解自己的肌肉」教育型內容</span><span class="cal-format carousel">Carousel</span><span class="cal-platform">IG + Threads</span></div><div class="cal-week"><span class="cal-week-label">第2週<br>4/7–4/11</span><span class="cal-topic">「3個訓練後讓你更快恢復的方法」教學型</span><span class="cal-format reels">Reels</span><span class="cal-platform">IG + FB</span></div><div class="cal-week"><span class="cal-week-label">第3週<br>4/14–4/18</span><span class="cal-topic">「按摩真的有效嗎？數據告訴你」信任建立</span><span class="cal-format carousel">Carousel</span><span class="cal-platform">全平台</span></div><div class="cal-week"><span class="cal-week-label">第4週<br>4/21–4/25</span><span class="cal-topic">「我最常被問的 5 個恢復問題」互動型</span><span class="cal-format reels">Reels</span><span class="cal-platform">IG + Threads</span></div></div><p style="font-size:13px;color:var(--text-muted);margin-top:12px;">* 行事曆每月初自動更新，可依你的實際狀況彈性調整發文時間</p></div>
+    <div class="example-card" style="margin-top:0;"><h4 class="calendar">💡 本月內容策略重點</h4><p>本月主軸：<strong style="color:var(--text-primary);">「建立專業可信度」</strong><br><br>第1週教育型讓受眾覺得「哇這個我不知道」→ 第2週教學型讓他們覺得「我可以做」→ 第3週數據型讓他們覺得「原來真的有效」→ 第4週互動型讓他們開口說話，增加社群黏著度。<br><br>建議 IG 發文頻率：<strong style="color:var(--text-primary);">每週 2-3 篇</strong>，搭配限時動態每天 1 則，維持帳號活躍度。</p></div>
+   </div>
+   <div id="example-competitor" class="example-content">
+    <div class="example-card" style="border-color:rgba(167,139,250,0.2);"><h4 class="competitor">🏆 本週爆款內容分析｜運動按摩 / 運動恢復產業</h4><p style="font-size:13px;color:var(--text-muted);margin-bottom:20px;">根據本週產業趨勢，分析目前最容易獲得高互動的 3 個內容方向</p><div class="competitor-card"><span class="direction-num">01</span><h5>「反直覺知識」格式</h5><p>本週「你以為...其實...」類型的貼文平均互動率比一般教學型高 42%。運動恢復領域的反直覺知識（如：「越痠代表效果越好？錯！」）特別容易引發轉發討論。<br><br><strong style="color:var(--purple);">建議你這樣用：</strong>Reels 開頭一句打破常識的話，例如「做完按摩越痛代表越有效？你被騙了」</p></div><div class="competitor-card"><span class="direction-num">02</span><h5>「數字量化效果」格式</h5><p>含具體數字的 Carousel（如「減少 72% 痠痛感」「3 個動作，恢復速度快 50%」）分享率比無數字版本高 3.2 倍。觀眾對「可量化的結果」信任感更高，轉換率也更好。<br><br><strong style="color:var(--purple);">建議你這樣用：</strong>在腳本標題加入具體數字，搭配你客戶的真實反饋（不用露臉）</p></div><div class="competitor-card"><span class="direction-num">03</span><h5>「客戶轉變故事」格式</h5><p>以匿名客戶案例分享（Before/After 故事）的貼文，信任感轉化成預約詢問的比例是純教學內容的 2.8 倍。不需要露出客戶臉孔，文字描述＋匿名形式同樣有效。<br><br><strong style="color:var(--purple);">建議你這樣用：</strong>「一個長期肩頸緊繃的客人，3 次療程後的變化……」這樣的開頭故事 Reels</p></div></div>
+   </div>
+   <p class="example-update-note">🔄 內容每週一自動更新 ｜ 你的版本會根據你的產業與品牌設定客製化</p>
+  </div>
+ </div>
+</section>
+<section>
+ <div class="container">
+  <div class="section-label">Testimonials</div>
+  <h2 class="section-title">不是更忙，而是更穩定</h2>
+  <p class="section-subtitle">來自不同產業的專業人士，正在用這套系統降低內容壓力、提高輸出穩定度，並讓品牌經營更有方向。</p>
+  <div class="testimonial-grid">
+   <div class="testimonial-card"><div class="testimonial-stars">★★★★★</div><p class="testimonial-text">「以前每週花 3 小時想內容，現在打開信箱就有了。腳本品質比我自己寫的還好，因為它真的懂我的產業脈絡。」</p><div class="testimonial-author"><div class="testimonial-avatar">💆</div><div><div class="testimonial-name">Jasmine</div><div class="testimonial-role">運動按摩師</div><div class="testimonial-plan">入門方案</div></div></div></div>
+   <div class="testimonial-card"><div class="testimonial-stars">★★★★★</div><p class="testimonial-text">「競爭對手爆款分析是我沒想到的驚喜。它讓我看到同業在跑什麼格式，然後我的 Reels 就從 200 觸及爆到 8000。」</p><div class="testimonial-author"><div class="testimonial-avatar">🏋️</div><div><div class="testimonial-name">Alex</div><div class="testimonial-role">健身教練</div><div class="testimonial-plan">成長方案</div></div></div></div>
+   <div class="testimonial-card"><div class="testimonial-stars">★★★★★</div><p class="testimonial-text">「月度行事曆讓我的社群規劃從零到有。加上每個月跟 Karen 對話一次，帳號方向清楚很多，不再亂發內容了。」</p><div class="testimonial-author"><div class="testimonial-avatar">🥗</div><div><div class="testimonial-name">小美</div><div class="testimonial-role">營養師</div><div class="testimonial-plan">VIP 方案</div></div></div></div>
+  </div>
+ </div>
+</section>
+<section>
+ <div class="container">
+  <div class="about-grid">
+   <div>
+    <div class="section-label">About</div>
+    <div class="about-name">Karen Chen 凱倫</div>
+    <div class="about-title">AI Workflow Consultant ✦ Content Strategist</div>
+    <p class="about-text">我是 Karen，專注於 AI 工作流、內容系統與個人品牌成長。過去幾年，我一直在做一件事：把原本很花時間、很耗腦的內容流程，整理成可以穩定運作的系統。</p>
+    <p class="about-text">Weekly Content Engine 不是一個憑空出現的內容生成器。它是我把自己實際在用的 AI 內容方法、趨勢追蹤邏輯與內容規劃流程，整理成你也能直接使用的版本。</p>
+    <p class="about-text">我的目標很簡單：幫助更多有專業的人，不再被內容壓垮，而是用更輕鬆、更有系統的方式，持續建立自己的品牌影響力。</p>
+    <div class="about-highlights"><div class="about-highlight"><h4>2+</h4><p>年 AI 工作流經驗</p></div><div class="about-highlight"><h4>10+</h4><p>品牌自動化系統</p></div><div class="about-highlight"><h4>500+</h4><p>AI 產出的內容</p></div></div>
+   </div>
+   <div class="newsletter-section">
+    <div class="section-label">Newsletter</div>
+    <h3 class="section-title" style="font-size:24px;">📡 Weekly Signal</h3>
+    <p style="color:var(--text-secondary);font-size:14px;">每週一封，分享 AI 工作流、內容系統、品牌成長觀察，還有我真正在用的方法與判斷。<br>不是工具整理，而是寫給想把內容做得更聰明的你。</p>
+    <div class="newsletter-form"><input type="email" class="newsletter-input" placeholder="你的 Email" id="newsletter-email"><button class="newsletter-btn" onclick="subscribeNewsletter()">即將開放</button></div>
+    <p style="color:var(--text-muted);font-size:12px;margin-top:12px;">已有 <span id="sub-count">80</span> 人訂閱 · 隨時可退訂</p>
+   </div>
+  </div>
+ </div>
+</section>
+<section id="faq">
+ <div class="container">
+  <div class="section-label">FAQ</div>
+  <h2 class="section-title">常見問題</h2>
+  <div class="faq-list">
+   <div class="faq-item"><div class="faq-question" onclick="toggleFaq(this)">AI 產出的內容品質好嗎？<span class="faq-arrow">+</span></div><div class="faq-answer">我們的系統不是一般的 ChatGPT 產出。每份內容都根據你的專業背景、本週最新產業趨勢和目標受眾量身打造。大多數用戶只需要微調 10–20% 就能直接發佈。</div></div>
+   <div class="faq-item"><div class="faq-question" onclick="toggleFaq(this)">試用期是怎麼運作的？<span class="faq-arrow">+</span></div><div class="faq-answer">填完表單後，你會進入 7 天免費試用期。試用期間系統每天早上 8:00 自動把內容包寄到你的信箱，讓你在短時間內快速感受這套系統的內容品質與節奏。正式訂閱後改為每週一早上 8:00 寄送。</div></div>
+   <div class="faq-item"><div class="faq-question" onclick="toggleFaq(this)">三個方案怎麼選？<span class="faq-arrow">+</span></div><div class="faq-answer">入門方案適合剛開始想穩定輸出內容的人；成長方案適合已經有在經營內容、想提升效率與策略節奏的人；VIP 方案適合把內容當成事業在做、希望搭配 Karen 一起優化成長策略的人。</div></div>
+   <div class="faq-item"><div class="faq-question" onclick="toggleFaq(this)">「競爭對手爆款分析」是怎麼做的？<span class="faq-arrow">+</span></div><div class="faq-answer">系統會根據你的產業關鍵字，分析本週趨勢中哪些內容格式、Hook 公式和主題方向目前互動率最高。不是直接抓某個帳號的後台數據，而是分析「什麼樣的內容在你的產業最容易爆」，再給你可直接套用的方向建議。</div></div>
+   <div class="faq-item"><div class="faq-question" onclick="toggleFaq(this)">VIP 方案的 1:1 諮詢是什麼形式？<span class="faq-arrow">+</span></div><div class="faq-answer">每月一次 60 分鐘線上視訊諮詢（Zoom / Google Meet）。Karen 會提前看你當月的內容表現，針對帳號方向、內容策略和成長瓶頸給出具體建議。不是制式 SOP，而是針對你的狀況一起調整。</div></div>
+   <div class="faq-item"><div class="faq-question" onclick="toggleFaq(this)">可以隨時取消嗎？<span class="faq-arrow">+</span></div><div class="faq-answer">可以。沒有綁約，隨時都能取消。已付款的月份會服務到月底。</div></div>
+   <div class="faq-item"><div class="faq-question" onclick="toggleFaq(this)">支援哪些產業？<span class="faq-arrow">+</span></div><div class="faq-answer">任何有持續資訊流動、趨勢可追蹤的專業領域都適合。目前使用者涵蓋健身教練、營養師、行銷顧問、設計師、心理師、室內設計師等。只要你的產業有內容機會，這套系統就能幫你整理成更好用的工作流。</div></div>
+   <div class="faq-item"><div class="faq-question" onclick="toggleFaq(this)">跟直接用 ChatGPT 有什麼不同？<span class="faq-arrow">+</span></div><div class="faq-answer">最大的差別不是「有沒有用 AI」，而是你有沒有一套真的能持續運作的內容系統。Weekly Content Engine 幫你自動追蹤產業趨勢、結合你的品牌語氣與受眾需求，直接整理成可用內容腳本與規劃。你買到的不是一堆 prompt，而是一套能幫你穩定輸出、持續累積品牌影響力的工作流。</div></div>
+  </div>
+ </div>
+</section>
+<section style="text-align:center;padding:80px 0;">
+ <div class="container">
+  <h2 class="section-title">準備好讓內容不再靠靈感硬撐了嗎？</h2>
+  <p style="color:var(--text-secondary);font-size:16px;margin-bottom:8px;">只要 3 分鐘填寫你的專業資料，明天早上 8:00，你就會收到第一份專屬內容包。</p>
+  <p style="color:var(--text-secondary);font-size:16px;margin-bottom:8px;">不是更多資訊，而是一套能幫你穩定輸出、持續累積的內容系統。</p>
+  <p style="color:var(--cyan);font-size:14px;margin-bottom:32px;">🎁 試用期間體驗完整成長方案功能，免費開始，覺得適合再訂閱</p>
+  <a href="https://forms.gle/i6vvD7tGzcah3ZYw5" class="hero-cta">立即開始 7 天免費試用 →</a>
+ </div>
+</section>
+<footer>
+ <div class="container">
+  <p>Weekly Content Engine by <a href="https://www.instagram.com/karen_contentbestie/" target="_blank">@karen_contentbestie</a></p>
+  <p style="margin-top:8px;">© 2026 Karen Chen. All rights reserved.</p>
+ </div>
+</footer>
+<script>
+function toggleFaq(el) { el.parentElement.classList.toggle('open'); }
+function showExample(id, btn) {
+ document.querySelectorAll('.example-content').forEach(el => el.classList.remove('active'));
+ document.querySelectorAll('.example-tab').forEach(el => el.classList.remove('active'));
+ document.getElementById('example-' + id).classList.add('active');
+ btn.classList.add('active');
+}
+function subscribeNewsletter() { alert('Weekly Signal 訂閱入口即將開放 📡'); }
+const SUBSCRIBER_SCRIPT_URL = 'YOUR_GOOGLE_APPS_SCRIPT_URL';
+async function fetchSubscriberCount() {
+ try {
+  if (SUBSCRIBER_SCRIPT_URL === 'YOUR_GOOGLE_APPS_SCRIPT_URL') return;
+  const resp = await fetch(SUBSCRIBER_SCRIPT_URL);
+  const data = await resp.json();
+  const count = data.count || 0;
+  document.getElementById('stat-users').textContent = count + '+';
+  document.getElementById('sub-count').textContent = count;
+ } catch (e) {}
+}
+window.addEventListener('DOMContentLoaded', fetchSubscriberCount);
+</script>
+</body>
+</html>
