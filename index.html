@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Weekly Content Engine｜把 AI 變成你的內容團隊</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+<script src="https://js.stripe.com/v3/"></script>
 <style>
 :root {
  --bg-dark: #0a0a0f;
@@ -184,6 +185,59 @@ section { padding: 100px 0; }
  font-size: 11px;
  color: var(--cyan);
 }
+
+/* ── PRICING TOGGLE ── */
+.pricing-toggle-wrap {
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ gap: 16px;
+ margin-bottom: 48px;
+}
+.toggle-label {
+ font-size: 15px;
+ color: var(--text-secondary);
+ transition: color 0.2s;
+}
+.toggle-label.active { color: var(--text-primary); font-weight: 600; }
+.toggle-switch {
+ position: relative;
+ width: 52px;
+ height: 28px;
+ cursor: pointer;
+}
+.toggle-switch input { display: none; }
+.toggle-slider {
+ position: absolute;
+ inset: 0;
+ background: var(--border);
+ border-radius: 100px;
+ transition: background 0.3s;
+}
+.toggle-slider::after {
+ content: '';
+ position: absolute;
+ width: 22px; height: 22px;
+ background: white;
+ border-radius: 50%;
+ top: 3px; left: 3px;
+ transition: transform 0.3s;
+}
+.toggle-switch input:checked + .toggle-slider { background: var(--accent); }
+.toggle-switch input:checked + .toggle-slider::after { transform: translateX(24px); }
+.save-badge {
+ display: inline-block;
+ background: rgba(52, 211, 153, 0.15);
+ border: 1px solid rgba(52, 211, 153, 0.3);
+ color: var(--green);
+ font-size: 12px;
+ font-weight: 700;
+ padding: 3px 10px;
+ border-radius: 100px;
+ margin-left: 6px;
+}
+
+/* ── PRICING CARDS ── */
 .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; align-items: start; }
 .price-card {
  background: var(--bg-card);
@@ -218,8 +272,16 @@ section { padding: 100px 0; }
  font-size: 42px;
  font-weight: 900;
  color: var(--accent);
+ line-height: 1.1;
 }
 .price-amount span { font-size: 16px; color: var(--text-muted); font-family: 'Noto Sans TC', sans-serif; font-weight: 400; }
+.price-annual-note {
+ font-size: 12px;
+ color: var(--green);
+ margin-top: 4px;
+ height: 18px;
+ transition: opacity 0.3s;
+}
 .price-desc { color: var(--text-secondary); font-size: 14px; margin: 12px 0 24px; min-height: 66px; }
 .price-features { list-style: none; margin-bottom: 32px; }
 .price-features li {
@@ -255,8 +317,23 @@ section { padding: 100px 0; }
 .price-btn:hover { border-color: var(--accent); color: var(--accent); }
 .price-card.featured .price-btn { background: var(--accent); color: var(--bg-dark); border: none; }
 .price-card.featured .price-btn:hover { box-shadow: 0 4px 20px var(--accent-glow); }
+.price-btn:disabled { opacity: 0.6; cursor: not-allowed; }
 .price-compare { text-align: center; margin-top: 40px; color: var(--text-muted); font-size: 13px; }
 .price-compare a { color: var(--accent); text-decoration: none; cursor: pointer; }
+
+/* Stripe loading state */
+.stripe-loading {
+ display: inline-block;
+ width: 16px; height: 16px;
+ border: 2px solid rgba(0,0,0,0.3);
+ border-top-color: var(--bg-dark);
+ border-radius: 50%;
+ animation: spin 0.6s linear infinite;
+ vertical-align: middle;
+ margin-right: 6px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
 .example-section {
  background: var(--bg-card);
  border-radius: 16px;
@@ -495,6 +572,7 @@ footer a { color: var(--accent); text-decoration: none; }
   </div>
  </div>
 </section>
+
 <section>
  <div class="container">
   <div class="section-label">How it works</div>
@@ -519,46 +597,84 @@ footer a { color: var(--accent); text-decoration: none; }
   </div>
  </div>
 </section>
+
 <section id="pricing">
  <div class="container">
   <div class="section-label">Pricing</div>
   <h2 class="section-title">選擇最適合你現在階段的方案</h2>
   <p class="section-subtitle">所有方案都包含 7 天免費試用。試用期間每天早上 8:00 自動送達，幫你快速判斷這套系統適不適合你。</p>
+
+  <!-- Billing toggle -->
+  <div class="pricing-toggle-wrap">
+   <span class="toggle-label active" id="label-monthly">月繳</span>
+   <label class="toggle-switch">
+    <input type="checkbox" id="billing-toggle" onchange="toggleBilling()">
+    <div class="toggle-slider"></div>
+   </label>
+   <span class="toggle-label" id="label-annual">年繳 <span class="save-badge">省 2 個月</span></span>
+  </div>
+
   <div class="pricing-grid">
+   <!-- 入門方案 -->
    <div class="price-card">
     <div class="price-icon">🚀</div>
     <div class="price-name">入門方案</div>
-    <div class="price-amount">699<span> /月</span></div>
+    <div class="price-amount" id="price-starter">699<span> /月</span></div>
+    <div class="price-annual-note" id="note-starter"></div>
     <p class="price-desc">適合剛開始想穩定輸出內容、不想再每週卡題目的個人品牌經營者。</p>
     <ul class="price-features">
-     <li>每週 3 個產業趨勢分析</li><li>專業解讀 + 內容靈感方向</li><li>每週 Carousel 腳本（7-8張）</li><li>每週 Reels 腳本（30-60秒）</li><li>完整 Hashtags 策略</li><li class="disabled">Threads + Facebook 跨平台版</li><li class="disabled">月度內容行事曆</li><li class="disabled">競爭對手爆款分析</li><li class="disabled">每月 1:1 顧問諮詢</li>
+     <li>每週 3 個產業趨勢分析</li>
+     <li>專業解讀 + 內容靈感方向</li>
+     <li>每週 Carousel 腳本（7-8張）</li>
+     <li>每週 Reels 腳本（30-60秒）</li>
+     <li>完整 Hashtags 策略</li>
+     <li class="disabled">Threads + Facebook 跨平台版</li>
+     <li class="disabled">月度內容行事曆</li>
+     <li class="disabled">競爭對手爆款分析</li>
+     <li class="disabled">每月 1:1 顧問諮詢</li>
     </ul>
-    <a href="https://forms.gle/i6vvD7tGzcah3ZYw5" class="price-btn">7 天免費試用</a>
+    <button class="price-btn" onclick="startCheckout('starter')" id="btn-starter">7 天免費試用</button>
    </div>
+
+   <!-- 成長方案 -->
    <div class="price-card featured">
     <div class="price-icon">📈</div>
     <div class="price-name">成長方案</div>
-    <div class="price-amount">1,199<span> /月</span></div>
+    <div class="price-amount" id="price-growth">1,199<span> /月</span></div>
+    <div class="price-annual-note" id="note-growth"></div>
     <p class="price-desc">適合已經在經營內容，想提升效率、加快成長、讓內容更有節奏的人。</p>
     <ul class="price-features">
-     <li>含入門方案所有內容</li><li>Threads + Facebook 跨平台改寫</li><li>月度內容行事曆（4週完整規劃）</li><li class="highlight">每週競爭對手爆款分析（3個方向）</li><li class="highlight">高互動 Hook 公式建議</li><li class="disabled">每月 1:1 顧問諮詢</li>
+     <li>含入門方案所有內容</li>
+     <li>Threads + Facebook 跨平台改寫</li>
+     <li>月度內容行事曆（4週完整規劃）</li>
+     <li class="highlight">每週競爭對手爆款分析（3個方向）</li>
+     <li class="highlight">高互動 Hook 公式建議</li>
+     <li class="disabled">每月 1:1 顧問諮詢</li>
     </ul>
-    <a href="https://forms.gle/i6vvD7tGzcah3ZYw5" class="price-btn">免費試用成長方案</a>
+    <button class="price-btn" onclick="startCheckout('growth')" id="btn-growth">免費試用成長方案</button>
    </div>
+
+   <!-- VIP 方案 -->
    <div class="price-card">
     <div class="price-icon">👑</div>
     <div class="price-name">VIP 方案</div>
-    <div class="price-amount">2,499<span> /月</span></div>
+    <div class="price-amount" id="price-vip">2,499<span> /月</span></div>
+    <div class="price-annual-note" id="note-vip"></div>
     <p class="price-desc">適合把內容當成事業在經營，想搭配 Karen 的策略判斷一起優化的人。</p>
     <ul class="price-features">
-     <li>含成長方案所有內容</li><li class="highlight">每月 60 分鐘 Karen 1:1 諮詢</li><li class="highlight">個人化帳號成長策略</li><li class="highlight">內容數據覆盤 + 方向調整</li><li>優先支援（24小時內回應）</li>
+     <li>含成長方案所有內容</li>
+     <li class="highlight">每月 60 分鐘 Karen 1:1 諮詢</li>
+     <li class="highlight">個人化帳號成長策略</li>
+     <li class="highlight">內容數據覆盤 + 方向調整</li>
+     <li>優先支援（24小時內回應）</li>
     </ul>
-    <a href="https://forms.gle/i6vvD7tGzcah3ZYw5" class="price-btn">立即預約諮詢</a>
+    <button class="price-btn" onclick="startCheckout('vip')" id="btn-vip">立即預約諮詢</button>
    </div>
   </div>
   <p class="price-compare">不確定哪個方案適合你？<a onclick="document.getElementById('faq').scrollIntoView({behavior:'smooth'})">看常見問題</a> 或直接先試用，感受這套內容系統適不適合你。</p>
  </div>
 </section>
+
 <section>
  <div class="container">
   <div class="section-label">This week's preview</div>
@@ -581,19 +697,20 @@ footer a { color: var(--accent); text-decoration: none; }
     <div class="example-card"><h4 class="carousel">📸 Carousel 腳本｜「3 個按摩前你一定忘了做的事」</h4><p><strong>封面（第1張）</strong><br>✕ 你做按摩前，一定漏了這 3 步<br>副標：做錯了，按摩效果打對折<br><br><strong>第2張｜常見錯誤①</strong><br>按摩前大量喝水 ❌<br>→ 大量水分讓組織變得「水腫」，壓力感倍增，反而不舒服<br>✓ 正確：按摩前 2 小時適量補水，按摩後再大量補充<br><br><strong>第3張｜常見錯誤②</strong><br>激烈運動後立刻按摩 ❌<br>→ 急性發炎期的肌肉不適合深層施壓，可能加重微撕裂<br>✓ 正確：運動後冷卻 30-60 分鐘，心率恢復再來<br><br><strong>第4張｜常見錯誤③</strong><br>有傷還硬撐按摩 ❌<br>→ 急性扭傷、骨折恢復期，按摩可能讓傷況惡化<br>✓ 正確：有明顯紅腫熱痛，先冰敷休息，告訴按摩師實際狀況<br><br><strong>第5-7張｜正確準備清單</strong><br>✅ 按摩前 24 小時：避免高強度訓練<br>✅ 按摩當天：穿著舒適寬鬆衣物<br>✅ 按摩前：如實告知身體狀況<br><br><strong>第8張｜CTA</strong><br>想讓每次按摩效果最大化？<br>預約前先傳訊息給我，我幫你規劃最適合的療程 ➡<br><br><strong>Caption：</strong><br>按摩不只是「推推推」，準備對了才事半功倍✨ 你上次按摩前有做到這些嗎？留言 1-3 告訴我你忘了哪個！</p><div style="margin-top:16px;padding:12px 16px;background:rgba(52,211,153,0.05);border-radius:8px;border:1px solid rgba(52,211,153,0.2);"><p style="font-size:12px;color:var(--green);">#運動按摩 #筋膜放鬆 #按摩師日常 #運動恢復 #健康生活 #sportsmassage #肌肉放鬆 #selfcare</p></div></div>
    </div>
    <div id="example-reels" class="example-content">
-    <div class="example-card"><h4 class="reels">🎬 Reels 腳本｜「你以為在放鬆，其實在傷害肌肉」</h4><p><strong>0–3秒｜Hook（鏡頭對著你，手指搖擺）</strong><br>「90% 的人運動後，第一步就做錯了。」<br>畫面建議：貼近臉部，眼神直視鏡頭<br><br><strong>3–15秒｜痛點</strong><br>「很多人肌肉痠了，第一反應就是拉伸。但如果是急性的肌肉疲勞，立刻做靜態拉伸反而可能加重微撕裂——尤其是高強度訓練後的 30 分鐘內。」<br>畫面建議：邊說邊示範「不對的拉伸動作」打 ❌<br><br><strong>15–40秒｜教學</strong><br>「正確步驟是這樣：<br>① 先走動 5 分鐘，讓心率自然降下來<br>② 補充水分 + 電解質<br>③ 再做輕柔的流動性動作，不是靜態撐住不動<br>最後，如果有按摩師幫你做軟組織放鬆，效果是靜態拉伸的 2 倍以上。」<br>畫面建議：邊說邊示範三個步驟，打上字幕<br><br><strong>40–50秒｜總結</strong><br>「這個順序對了，你隔天痠痛感至少少 50%。」<br>畫面建議：比 👍，輕鬆表情<br><br><strong>50–60秒｜CTA</strong><br>「想學更多恢復知識？追蹤我，每週都有新方法！」<br>畫面建議：直視鏡頭，揮手<br><br><strong>Caption：</strong><br>很多痠痛不是訓練造成的，是恢復方式錯了 💡 你之前都怎麼做的？留言告訴我 👇</p><div style="margin-top:16px;padding:12px 16px;background:rgba(244,114,182,0.05);border-radius:8px;border:1px solid rgba(244,114,182,0.2);"><p style="font-size:12px;color:var(--pink);">#運動恢復 #健身 #按摩師 #肌肉恢復 #運動知識 #recovery #sportsmassage #健康tips</p></div></div>
+    <div class="example-card"><h4 class="reels">🎬 Reels 腳本｜「你以為在放鬆，其實在傷害肌肉」</h4><p><strong>0–3秒｜Hook（鏡頭對著你，手指搖擺）</strong><br>「90% 的人運動後，第一步就做錯了。」<br><br><strong>3–15秒｜痛點</strong><br>「很多人肌肉痠了，第一反應就是拉伸。但如果是急性的肌肉疲勞，立刻做靜態拉伸反而可能加重微撕裂——尤其是高強度訓練後的 30 分鐘內。」<br><br><strong>15–40秒｜教學</strong><br>「正確步驟是這樣：① 先走動 5 分鐘，讓心率自然降下來 ② 補充水分 + 電解質 ③ 再做輕柔的流動性動作，不是靜態撐住不動。最後，如果有按摩師幫你做軟組織放鬆，效果是靜態拉伸的 2 倍以上。」<br><br><strong>40–50秒｜總結</strong><br>「這個順序對了，你隔天痠痛感至少少 50%。」<br><br><strong>50–60秒｜CTA</strong><br>「想學更多恢復知識？追蹤我，每週都有新方法！」<br><br><strong>Caption：</strong><br>很多痠痛不是訓練造成的，是恢復方式錯了 💡 你之前都怎麼做的？留言告訴我 👇</p><div style="margin-top:16px;padding:12px 16px;background:rgba(244,114,182,0.05);border-radius:8px;border:1px solid rgba(244,114,182,0.2);"><p style="font-size:12px;color:var(--pink);">#運動恢復 #健身 #按摩師 #肌肉恢復 #運動知識 #recovery #sportsmassage #健康tips</p></div></div>
    </div>
    <div id="example-calendar" class="example-content">
-    <div class="example-card"><h4 class="calendar">📅 四月份內容行事曆｜運動按摩師版</h4><div style="margin-bottom:16px;"><div class="cal-week" style="font-size:11px;color:var(--text-muted);font-weight:700;padding-bottom:8px;border-bottom:1px solid var(--border);"><span></span><span>建議主題</span><span>格式</span><span>平台</span></div><div class="cal-week"><span class="cal-week-label">第1週<br>3/31–4/4</span><span class="cal-topic">「你可能根本不了解自己的肌肉」教育型內容</span><span class="cal-format carousel">Carousel</span><span class="cal-platform">IG + Threads</span></div><div class="cal-week"><span class="cal-week-label">第2週<br>4/7–4/11</span><span class="cal-topic">「3個訓練後讓你更快恢復的方法」教學型</span><span class="cal-format reels">Reels</span><span class="cal-platform">IG + FB</span></div><div class="cal-week"><span class="cal-week-label">第3週<br>4/14–4/18</span><span class="cal-topic">「按摩真的有效嗎？數據告訴你」信任建立</span><span class="cal-format carousel">Carousel</span><span class="cal-platform">全平台</span></div><div class="cal-week"><span class="cal-week-label">第4週<br>4/21–4/25</span><span class="cal-topic">「我最常被問的 5 個恢復問題」互動型</span><span class="cal-format reels">Reels</span><span class="cal-platform">IG + Threads</span></div></div><p style="font-size:13px;color:var(--text-muted);margin-top:12px;">* 行事曆每月初自動更新，可依你的實際狀況彈性調整發文時間</p></div>
+    <div class="example-card"><h4 class="calendar">📅 四月份內容行事曆｜運動按摩師版</h4><div style="margin-bottom:16px;"><div class="cal-week" style="font-size:11px;color:var(--text-muted);font-weight:700;padding-bottom:8px;border-bottom:1px solid var(--border);"><span></span><span>建議主題</span><span>格式</span><span>平台</span></div><div class="cal-week"><span class="cal-week-label">第1週</span><span class="cal-topic">「你可能根本不了解自己的肌肉」教育型內容</span><span class="cal-format carousel">Carousel</span><span class="cal-platform">IG + Threads</span></div><div class="cal-week"><span class="cal-week-label">第2週</span><span class="cal-topic">「3個訓練後讓你更快恢復的方法」教學型</span><span class="cal-format reels">Reels</span><span class="cal-platform">IG + FB</span></div><div class="cal-week"><span class="cal-week-label">第3週</span><span class="cal-topic">「按摩真的有效嗎？數據告訴你」信任建立</span><span class="cal-format carousel">Carousel</span><span class="cal-platform">全平台</span></div><div class="cal-week"><span class="cal-week-label">第4週</span><span class="cal-topic">「我最常被問的 5 個恢復問題」互動型</span><span class="cal-format reels">Reels</span><span class="cal-platform">IG + Threads</span></div></div><p style="font-size:13px;color:var(--text-muted);margin-top:12px;">* 行事曆每月初自動更新，可依你的實際狀況彈性調整</p></div>
     <div class="example-card" style="margin-top:0;"><h4 class="calendar">💡 本月內容策略重點</h4><p>本月主軸：<strong style="color:var(--text-primary);">「建立專業可信度」</strong><br><br>第1週教育型讓受眾覺得「哇這個我不知道」→ 第2週教學型讓他們覺得「我可以做」→ 第3週數據型讓他們覺得「原來真的有效」→ 第4週互動型讓他們開口說話，增加社群黏著度。<br><br>建議 IG 發文頻率：<strong style="color:var(--text-primary);">每週 2-3 篇</strong>，搭配限時動態每天 1 則，維持帳號活躍度。</p></div>
    </div>
    <div id="example-competitor" class="example-content">
-    <div class="example-card" style="border-color:rgba(167,139,250,0.2);"><h4 class="competitor">🏆 本週爆款內容分析｜運動按摩 / 運動恢復產業</h4><p style="font-size:13px;color:var(--text-muted);margin-bottom:20px;">根據本週產業趨勢，分析目前最容易獲得高互動的 3 個內容方向</p><div class="competitor-card"><span class="direction-num">01</span><h5>「反直覺知識」格式</h5><p>本週「你以為...其實...」類型的貼文平均互動率比一般教學型高 42%。運動恢復領域的反直覺知識（如：「越痠代表效果越好？錯！」）特別容易引發轉發討論。<br><br><strong style="color:var(--purple);">建議你這樣用：</strong>Reels 開頭一句打破常識的話，例如「做完按摩越痛代表越有效？你被騙了」</p></div><div class="competitor-card"><span class="direction-num">02</span><h5>「數字量化效果」格式</h5><p>含具體數字的 Carousel（如「減少 72% 痠痛感」「3 個動作，恢復速度快 50%」）分享率比無數字版本高 3.2 倍。觀眾對「可量化的結果」信任感更高，轉換率也更好。<br><br><strong style="color:var(--purple);">建議你這樣用：</strong>在腳本標題加入具體數字，搭配你客戶的真實反饋（不用露臉）</p></div><div class="competitor-card"><span class="direction-num">03</span><h5>「客戶轉變故事」格式</h5><p>以匿名客戶案例分享（Before/After 故事）的貼文，信任感轉化成預約詢問的比例是純教學內容的 2.8 倍。不需要露出客戶臉孔，文字描述＋匿名形式同樣有效。<br><br><strong style="color:var(--purple);">建議你這樣用：</strong>「一個長期肩頸緊繃的客人，3 次療程後的變化……」這樣的開頭故事 Reels</p></div></div>
+    <div class="example-card" style="border-color:rgba(167,139,250,0.2);"><h4 class="competitor">🏆 本週爆款內容分析｜運動按摩 / 運動恢復產業</h4><p style="font-size:13px;color:var(--text-muted);margin-bottom:20px;">根據本週產業趨勢，分析目前最容易獲得高互動的 3 個內容方向</p><div class="competitor-card"><span class="direction-num">01</span><h5>「反直覺知識」格式</h5><p>本週「你以為...其實...」類型的貼文平均互動率比一般教學型高 42%。<br><br><strong style="color:var(--purple);">建議你這樣用：</strong>Reels 開頭一句打破常識的話，例如「做完按摩越痛代表越有效？你被騙了」</p></div><div class="competitor-card"><span class="direction-num">02</span><h5>「數字量化效果」格式</h5><p>含具體數字的 Carousel 分享率比無數字版本高 3.2 倍。<br><br><strong style="color:var(--purple);">建議你這樣用：</strong>在腳本標題加入具體數字，搭配你客戶的真實反饋</p></div><div class="competitor-card"><span class="direction-num">03</span><h5>「客戶轉變故事」格式</h5><p>以匿名客戶案例分享的貼文，信任感轉化成預約詢問的比例是純教學內容的 2.8 倍。<br><br><strong style="color:var(--purple);">建議你這樣用：</strong>「一個長期肩頸緊繃的客人，3 次療程後的變化……」</p></div></div>
    </div>
    <p class="example-update-note">🔄 內容每週一自動更新 ｜ 你的版本會根據你的產業與品牌設定客製化</p>
   </div>
  </div>
 </section>
+
 <section>
  <div class="container">
   <div class="section-label">Testimonials</div>
@@ -606,6 +723,7 @@ footer a { color: var(--accent); text-decoration: none; }
   </div>
  </div>
 </section>
+
 <section>
  <div class="container">
   <div class="about-grid">
@@ -628,6 +746,7 @@ footer a { color: var(--accent); text-decoration: none; }
   </div>
  </div>
 </section>
+
 <section id="faq">
  <div class="container">
   <div class="section-label">FAQ</div>
@@ -636,14 +755,16 @@ footer a { color: var(--accent); text-decoration: none; }
    <div class="faq-item"><div class="faq-question" onclick="toggleFaq(this)">AI 產出的內容品質好嗎？<span class="faq-arrow">+</span></div><div class="faq-answer">我們的系統不是一般的 ChatGPT 產出。每份內容都根據你的專業背景、本週最新產業趨勢和目標受眾量身打造。大多數用戶只需要微調 10–20% 就能直接發佈。</div></div>
    <div class="faq-item"><div class="faq-question" onclick="toggleFaq(this)">試用期是怎麼運作的？<span class="faq-arrow">+</span></div><div class="faq-answer">填完表單後，你會進入 7 天免費試用期。試用期間系統每天早上 8:00 自動把內容包寄到你的信箱，讓你在短時間內快速感受這套系統的內容品質與節奏。正式訂閱後改為每週一早上 8:00 寄送。</div></div>
    <div class="faq-item"><div class="faq-question" onclick="toggleFaq(this)">三個方案怎麼選？<span class="faq-arrow">+</span></div><div class="faq-answer">入門方案適合剛開始想穩定輸出內容的人；成長方案適合已經有在經營內容、想提升效率與策略節奏的人；VIP 方案適合把內容當成事業在做、希望搭配 Karen 一起優化成長策略的人。</div></div>
+   <div class="faq-item"><div class="faq-question" onclick="toggleFaq(this)">月繳和年繳有什麼差別？<span class="faq-arrow">+</span></div><div class="faq-answer">年繳方案等於省下兩個月的費用（約 83% 折扣），適合確定要長期使用的用戶。月繳沒有綁約，彈性更高，隨時可以取消或切換方案。</div></div>
    <div class="faq-item"><div class="faq-question" onclick="toggleFaq(this)">「競爭對手爆款分析」是怎麼做的？<span class="faq-arrow">+</span></div><div class="faq-answer">系統會根據你的產業關鍵字，分析本週趨勢中哪些內容格式、Hook 公式和主題方向目前互動率最高。不是直接抓某個帳號的後台數據，而是分析「什麼樣的內容在你的產業最容易爆」，再給你可直接套用的方向建議。</div></div>
    <div class="faq-item"><div class="faq-question" onclick="toggleFaq(this)">VIP 方案的 1:1 諮詢是什麼形式？<span class="faq-arrow">+</span></div><div class="faq-answer">每月一次 60 分鐘線上視訊諮詢（Zoom / Google Meet）。Karen 會提前看你當月的內容表現，針對帳號方向、內容策略和成長瓶頸給出具體建議。不是制式 SOP，而是針對你的狀況一起調整。</div></div>
-   <div class="faq-item"><div class="faq-question" onclick="toggleFaq(this)">可以隨時取消嗎？<span class="faq-arrow">+</span></div><div class="faq-answer">可以。沒有綁約，隨時都能取消。已付款的月份會服務到月底。</div></div>
-   <div class="faq-item"><div class="faq-question" onclick="toggleFaq(this)">支援哪些產業？<span class="faq-arrow">+</span></div><div class="faq-answer">任何有持續資訊流動、趨勢可追蹤的專業領域都適合。目前使用者涵蓋健身教練、營養師、行銷顧問、設計師、心理師、室內設計師等。只要你的產業有內容機會，這套系統就能幫你整理成更好用的工作流。</div></div>
+   <div class="faq-item"><div class="faq-question" onclick="toggleFaq(this)">可以隨時取消嗎？<span class="faq-arrow">+</span></div><div class="faq-answer">月繳方案可以隨時取消，已付款的月份會服務到月底。年繳方案不提供退款，建議先試用月繳確認適合後再升級年繳。</div></div>
+   <div class="faq-item"><div class="faq-question" onclick="toggleFaq(this)">支援哪些產業？<span class="faq-arrow">+</span></div><div class="faq-answer">任何有持續資訊流動、趨勢可追蹤的專業領域都適合。目前使用者涵蓋健身教練、營養師、行銷顧問、設計師、心理師、室內設計師等。</div></div>
    <div class="faq-item"><div class="faq-question" onclick="toggleFaq(this)">跟直接用 ChatGPT 有什麼不同？<span class="faq-arrow">+</span></div><div class="faq-answer">最大的差別不是「有沒有用 AI」，而是你有沒有一套真的能持續運作的內容系統。Weekly Content Engine 幫你自動追蹤產業趨勢、結合你的品牌語氣與受眾需求，直接整理成可用內容腳本與規劃。你買到的不是一堆 prompt，而是一套能幫你穩定輸出、持續累積品牌影響力的工作流。</div></div>
   </div>
  </div>
 </section>
+
 <section style="text-align:center;padding:80px 0;">
  <div class="container">
   <h2 class="section-title">準備好讓內容不再靠靈感硬撐了嗎？</h2>
@@ -653,21 +774,149 @@ footer a { color: var(--accent); text-decoration: none; }
   <a href="https://forms.gle/i6vvD7tGzcah3ZYw5" class="hero-cta">立即開始 7 天免費試用 →</a>
  </div>
 </section>
+
 <footer>
  <div class="container">
   <p>Weekly Content Engine by <a href="https://www.instagram.com/karen_contentbestie/" target="_blank">@karen_contentbestie</a></p>
   <p style="margin-top:8px;">© 2026 Karen Chen. All rights reserved.</p>
  </div>
 </footer>
+
 <script>
+// ── STRIPE CONFIG ──
+// 申請 Stripe 後把這裡換成你的 publishable key
+const STRIPE_PUBLISHABLE_KEY = 'YOUR_STRIPE_PUBLISHABLE_KEY';
+
+// 填入從 Stripe Dashboard → Products 建立後拿到的 Price ID
+// 格式：price_xxxxxxxxxxxxxxxxxxxxxxxx
+const PRICE_IDS = {
+  starter_monthly:  'YOUR_PRICE_ID_STARTER_MONTHLY',   // NT$699/月
+  starter_annual:   'YOUR_PRICE_ID_STARTER_ANNUAL',    // NT$6,990/年
+  growth_monthly:   'YOUR_PRICE_ID_GROWTH_MONTHLY',    // NT$1,199/月
+  growth_annual:    'YOUR_PRICE_ID_GROWTH_ANNUAL',     // NT$11,990/年
+  vip_monthly:      'YOUR_PRICE_ID_VIP_MONTHLY',       // NT$2,499/月
+  vip_annual:       'YOUR_PRICE_ID_VIP_ANNUAL',        // NT$24,990/年
+};
+
+// 你的 n8n webhook URL（收到 Stripe checkout.session.completed 後觸發試用流程）
+// 串接方式：Stripe Webhook → n8n → Google Sheet → Trial WF
+const SUCCESS_URL = window.location.origin + window.location.pathname + '?checkout=success';
+const CANCEL_URL  = window.location.origin + window.location.pathname + '?checkout=cancel';
+
+// ── PRICING DATA ──
+const PRICING = {
+  starter: {
+    monthly: { display: '699',   note: '' },
+    annual:  { display: '583',   note: '年繳 NT$6,990｜省 NT$1,398' },
+  },
+  growth: {
+    monthly: { display: '1,199', note: '' },
+    annual:  { display: '999',   note: '年繳 NT$11,990｜省 NT$2,398' },
+  },
+  vip: {
+    monthly: { display: '2,499', note: '' },
+    annual:  { display: '2,083', note: '年繳 NT$24,990｜省 NT$4,998' },
+  },
+};
+
+let isAnnual = false;
+
+// ── BILLING TOGGLE ──
+function toggleBilling() {
+  isAnnual = document.getElementById('billing-toggle').checked;
+  const mode = isAnnual ? 'annual' : 'monthly';
+
+  document.getElementById('label-monthly').classList.toggle('active', !isAnnual);
+  document.getElementById('label-annual').classList.toggle('active', isAnnual);
+
+  ['starter', 'growth', 'vip'].forEach(plan => {
+    const data = PRICING[plan][mode];
+    document.getElementById(`price-${plan}`).innerHTML =
+      `${data.display}<span> /月</span>`;
+    const noteEl = document.getElementById(`note-${plan}`);
+    noteEl.textContent = data.note;
+    noteEl.style.opacity = isAnnual ? '1' : '0';
+  });
+}
+
+// ── STRIPE CHECKOUT ──
+async function startCheckout(plan) {
+  // If Stripe not configured yet, fall back to trial form
+  if (STRIPE_PUBLISHABLE_KEY === 'YOUR_STRIPE_PUBLISHABLE_KEY') {
+    window.location.href = 'https://forms.gle/i6vvD7tGzcah3ZYw5';
+    return;
+  }
+
+  const mode = isAnnual ? 'annual' : 'monthly';
+  const priceKey = `${plan}_${mode}`;
+  const priceId = PRICE_IDS[priceKey];
+
+  if (!priceId || priceId.startsWith('YOUR_')) {
+    alert('付款方案設定中，請先填寫試用表單。');
+    window.location.href = 'https://forms.gle/i6vvD7tGzcah3ZYw5';
+    return;
+  }
+
+  const btn = document.getElementById(`btn-${plan}`);
+  const originalText = btn.textContent;
+  btn.innerHTML = '<span class="stripe-loading"></span> 處理中...';
+  btn.disabled = true;
+
+  try {
+    const stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
+
+    // Option A: Stripe Checkout（最簡單，推薦）
+    // 需要後端建立 Checkout Session — 見下方 n8n webhook 說明
+    // 這裡示範用 Payment Links（不需後端，Stripe Dashboard 直接建立）
+    // 正式上線後建議改用 Checkout Session 方式
+
+    const result = await stripe.redirectToCheckout({
+      lineItems: [{ price: priceId, quantity: 1 }],
+      mode: isAnnual ? 'payment' : 'subscription',
+      successUrl: SUCCESS_URL,
+      cancelUrl: CANCEL_URL,
+      // 讓用戶在 Checkout 填 email，Stripe 會自動建立 Customer
+      billingAddressCollection: 'auto',
+      locale: 'zh',
+    });
+
+    if (result.error) {
+      console.error(result.error);
+      alert('付款過程發生錯誤，請稍後再試。');
+    }
+  } catch (e) {
+    console.error(e);
+    alert('連線失敗，請稍後再試。');
+  } finally {
+    btn.textContent = originalText;
+    btn.disabled = false;
+  }
+}
+
+// ── SUCCESS / CANCEL HANDLING ──
+window.addEventListener('DOMContentLoaded', () => {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('checkout') === 'success') {
+    // 付款成功 — 可以顯示成功訊息或導向感謝頁
+    alert('付款成功！歡迎加入 Weekly Content Engine，請查收確認信。');
+    // Clean URL
+    window.history.replaceState({}, '', window.location.pathname);
+  }
+  fetchSubscriberCount();
+});
+
+// ── MISC ──
 function toggleFaq(el) { el.parentElement.classList.toggle('open'); }
+
 function showExample(id, btn) {
  document.querySelectorAll('.example-content').forEach(el => el.classList.remove('active'));
  document.querySelectorAll('.example-tab').forEach(el => el.classList.remove('active'));
  document.getElementById('example-' + id).classList.add('active');
  btn.classList.add('active');
 }
+
 function subscribeNewsletter() { alert('Weekly Signal 訂閱入口即將開放 📡'); }
+
 const SUBSCRIBER_SCRIPT_URL = 'YOUR_GOOGLE_APPS_SCRIPT_URL';
 async function fetchSubscriberCount() {
  try {
@@ -679,7 +928,6 @@ async function fetchSubscriberCount() {
   document.getElementById('sub-count').textContent = count;
  } catch (e) {}
 }
-window.addEventListener('DOMContentLoaded', fetchSubscriberCount);
 </script>
 </body>
 </html>
