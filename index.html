@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Weekly Content Engine｜把 AI 變成你的內容團隊</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
-<script src="https://js.stripe.com/v3/"></script>
 <style>
 :root {
  --bg-dark: #0a0a0f;
@@ -321,11 +320,11 @@ section { padding: 100px 0; }
 .price-compare { text-align: center; margin-top: 40px; color: var(--text-muted); font-size: 13px; }
 .price-compare a { color: var(--accent); text-decoration: none; cursor: pointer; }
 
-/* Stripe loading state */
-.stripe-loading {
+/* 付款按鈕 loading 狀態 */
+.btn-loading {
  display: inline-block;
- width: 16px; height: 16px;
- border: 2px solid rgba(0,0,0,0.3);
+ width: 14px; height: 14px;
+ border: 2px solid rgba(0,0,0,0.25);
  border-top-color: var(--bg-dark);
  border-radius: 50%;
  animation: spin 0.6s linear infinite;
@@ -633,7 +632,7 @@ footer a { color: var(--accent); text-decoration: none; }
      <li class="disabled">競爭對手爆款分析</li>
      <li class="disabled">每月 1:1 顧問諮詢</li>
     </ul>
-    <button class="price-btn" onclick="startCheckout('starter')" id="btn-starter">7 天免費試用</button>
+    <button class="price-btn" onclick="startCheckout('starter')" id="btn-starter">月繳 NT$699 開始訂閱</button>
    </div>
 
    <!-- 成長方案 -->
@@ -651,7 +650,7 @@ footer a { color: var(--accent); text-decoration: none; }
      <li class="highlight">高互動 Hook 公式建議</li>
      <li class="disabled">每月 1:1 顧問諮詢</li>
     </ul>
-    <button class="price-btn" onclick="startCheckout('growth')" id="btn-growth">免費試用成長方案</button>
+    <button class="price-btn" onclick="startCheckout('growth')" id="btn-growth">月繳 NT$1,199 開始訂閱</button>
    </div>
 
    <!-- VIP 方案 -->
@@ -668,7 +667,7 @@ footer a { color: var(--accent); text-decoration: none; }
      <li class="highlight">內容數據覆盤 + 方向調整</li>
      <li>優先支援（24小時內回應）</li>
     </ul>
-    <button class="price-btn" onclick="startCheckout('vip')" id="btn-vip">立即預約諮詢</button>
+    <button class="price-btn" onclick="startCheckout('vip')" id="btn-vip">LINE 預約諮詢 →</button>
    </div>
   </div>
   <p class="price-compare">不確定哪個方案適合你？<a onclick="document.getElementById('faq').scrollIntoView({behavior:'smooth'})">看常見問題</a> 或直接先試用，感受這套內容系統適不適合你。</p>
@@ -783,27 +782,16 @@ footer a { color: var(--accent); text-decoration: none; }
 </footer>
 
 <script>
-// ── STRIPE CONFIG ──
-// 申請 Stripe 後把這裡換成你的 publishable key
-const STRIPE_PUBLISHABLE_KEY = 'YOUR_STRIPE_PUBLISHABLE_KEY';
-
-// 填入從 Stripe Dashboard → Products 建立後拿到的 Price ID
-// 格式：price_xxxxxxxxxxxxxxxxxxxxxxxx
-const PRICE_IDS = {
-  starter_monthly:  'YOUR_PRICE_ID_STARTER_MONTHLY',   // NT$699/月
-  starter_annual:   'YOUR_PRICE_ID_STARTER_ANNUAL',    // NT$6,990/年
-  growth_monthly:   'YOUR_PRICE_ID_GROWTH_MONTHLY',    // NT$1,199/月
-  growth_annual:    'YOUR_PRICE_ID_GROWTH_ANNUAL',     // NT$11,990/年
-  vip_monthly:      'YOUR_PRICE_ID_VIP_MONTHLY',       // NT$2,499/月
-  vip_annual:       'YOUR_PRICE_ID_VIP_ANNUAL',        // NT$24,990/年
+// ── 綠界 ECPay 付款連結 ──
+const ECPAY_LINKS = {
+  starter_monthly: 'https://p.ecpay.com.tw/2514C74',
+  starter_annual:  'https://p.ecpay.com.tw/C23D3DB',
+  growth_monthly:  'https://p.ecpay.com.tw/5E1BA88',
+  growth_annual:   'https://p.ecpay.com.tw/49DEF98',
+  vip:             'https://lin.ee/QjF2cDk',
 };
 
-// 你的 n8n webhook URL（收到 Stripe checkout.session.completed 後觸發試用流程）
-// 串接方式：Stripe Webhook → n8n → Google Sheet → Trial WF
-const SUCCESS_URL = window.location.origin + window.location.pathname + '?checkout=success';
-const CANCEL_URL  = window.location.origin + window.location.pathname + '?checkout=cancel';
-
-// ── PRICING DATA ──
+// ── 價格顯示資料 ──
 const PRICING = {
   starter: {
     monthly: { display: '699',   note: '' },
@@ -821,7 +809,7 @@ const PRICING = {
 
 let isAnnual = false;
 
-// ── BILLING TOGGLE ──
+// ── 月繳 / 年繳切換 ──
 function toggleBilling() {
   isAnnual = document.getElementById('billing-toggle').checked;
   const mode = isAnnual ? 'annual' : 'monthly';
@@ -837,97 +825,85 @@ function toggleBilling() {
     noteEl.textContent = data.note;
     noteEl.style.opacity = isAnnual ? '1' : '0';
   });
+
+  // 同步更新按鈕文字
+  updateBtnLabels();
 }
 
-// ── STRIPE CHECKOUT ──
-async function startCheckout(plan) {
-  // If Stripe not configured yet, fall back to trial form
-  if (STRIPE_PUBLISHABLE_KEY === 'YOUR_STRIPE_PUBLISHABLE_KEY') {
-    window.location.href = 'https://forms.gle/i6vvD7tGzcah3ZYw5';
+function updateBtnLabels() {
+  const mode = isAnnual ? 'annual' : 'monthly';
+  const labels = {
+    starter: isAnnual ? '年繳 NT$6,990 開始訂閱' : '月繳 NT$699 開始訂閱',
+    growth:  isAnnual ? '年繳 NT$11,990 開始訂閱' : '月繳 NT$1,199 開始訂閱',
+  };
+  if (document.getElementById('btn-starter')) {
+    document.getElementById('btn-starter').textContent = labels.starter;
+  }
+  if (document.getElementById('btn-growth')) {
+    document.getElementById('btn-growth').textContent = labels.growth;
+  }
+}
+
+// ── 付款：直接跳轉綠界 Payment Link ──
+function startCheckout(plan) {
+  if (plan === 'vip') {
+    // VIP 導向 LINE@
+    window.open(ECPAY_LINKS.vip, '_blank');
     return;
   }
 
   const mode = isAnnual ? 'annual' : 'monthly';
-  const priceKey = `${plan}_${mode}`;
-  const priceId = PRICE_IDS[priceKey];
+  const key = `${plan}_${mode}`;
+  const url = ECPAY_LINKS[key];
 
-  if (!priceId || priceId.startsWith('YOUR_')) {
-    alert('付款方案設定中，請先填寫試用表單。');
-    window.location.href = 'https://forms.gle/i6vvD7tGzcah3ZYw5';
+  if (!url) {
+    alert('連結設定中，請稍後再試。');
     return;
   }
 
+  // 視覺 feedback
   const btn = document.getElementById(`btn-${plan}`);
   const originalText = btn.textContent;
-  btn.innerHTML = '<span class="stripe-loading"></span> 處理中...';
+  btn.innerHTML = '<span class="btn-loading"></span> 跳轉中...';
   btn.disabled = true;
 
-  try {
-    const stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
-
-    // Option A: Stripe Checkout（最簡單，推薦）
-    // 需要後端建立 Checkout Session — 見下方 n8n webhook 說明
-    // 這裡示範用 Payment Links（不需後端，Stripe Dashboard 直接建立）
-    // 正式上線後建議改用 Checkout Session 方式
-
-    const result = await stripe.redirectToCheckout({
-      lineItems: [{ price: priceId, quantity: 1 }],
-      mode: isAnnual ? 'payment' : 'subscription',
-      successUrl: SUCCESS_URL,
-      cancelUrl: CANCEL_URL,
-      // 讓用戶在 Checkout 填 email，Stripe 會自動建立 Customer
-      billingAddressCollection: 'auto',
-      locale: 'zh',
-    });
-
-    if (result.error) {
-      console.error(result.error);
-      alert('付款過程發生錯誤，請稍後再試。');
-    }
-  } catch (e) {
-    console.error(e);
-    alert('連線失敗，請稍後再試。');
-  } finally {
-    btn.textContent = originalText;
-    btn.disabled = false;
-  }
+  setTimeout(() => {
+    window.location.href = url;
+    // 還原按鈕（若用戶按返回）
+    setTimeout(() => {
+      btn.textContent = originalText;
+      btn.disabled = false;
+    }, 3000);
+  }, 300);
 }
 
-// ── SUCCESS / CANCEL HANDLING ──
-window.addEventListener('DOMContentLoaded', () => {
-  const params = new URLSearchParams(window.location.search);
-  if (params.get('checkout') === 'success') {
-    // 付款成功 — 可以顯示成功訊息或導向感謝頁
-    alert('付款成功！歡迎加入 Weekly Content Engine，請查收確認信。');
-    // Clean URL
-    window.history.replaceState({}, '', window.location.pathname);
-  }
-  fetchSubscriberCount();
-});
-
-// ── MISC ──
+// ── 其他功能 ──
 function toggleFaq(el) { el.parentElement.classList.toggle('open'); }
 
 function showExample(id, btn) {
- document.querySelectorAll('.example-content').forEach(el => el.classList.remove('active'));
- document.querySelectorAll('.example-tab').forEach(el => el.classList.remove('active'));
- document.getElementById('example-' + id).classList.add('active');
- btn.classList.add('active');
+  document.querySelectorAll('.example-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.example-tab').forEach(el => el.classList.remove('active'));
+  document.getElementById('example-' + id).classList.add('active');
+  btn.classList.add('active');
 }
 
 function subscribeNewsletter() { alert('Weekly Signal 訂閱入口即將開放 📡'); }
 
 const SUBSCRIBER_SCRIPT_URL = 'YOUR_GOOGLE_APPS_SCRIPT_URL';
 async function fetchSubscriberCount() {
- try {
-  if (SUBSCRIBER_SCRIPT_URL === 'YOUR_GOOGLE_APPS_SCRIPT_URL') return;
-  const resp = await fetch(SUBSCRIBER_SCRIPT_URL);
-  const data = await resp.json();
-  const count = data.count || 0;
-  document.getElementById('stat-users').textContent = count + '+';
-  document.getElementById('sub-count').textContent = count;
- } catch (e) {}
+  try {
+    if (SUBSCRIBER_SCRIPT_URL === 'YOUR_GOOGLE_APPS_SCRIPT_URL') return;
+    const resp = await fetch(SUBSCRIBER_SCRIPT_URL);
+    const data = await resp.json();
+    const count = data.count || 0;
+    document.getElementById('stat-users').textContent = count + '+';
+    document.getElementById('sub-count').textContent = count;
+  } catch (e) {}
 }
+
+window.addEventListener('DOMContentLoaded', () => {
+  fetchSubscriberCount();
+});
 </script>
 </body>
 </html>
