@@ -562,7 +562,7 @@ footer a { color: var(--accent); text-decoration: none; }
    <h1>把 AI 變成你的<br><span class="accent">內容團隊</span></h1>
    <p>為創作者、顧問、教練與知識工作者打造的 AI 內容系統。自動追蹤產業趨勢、生成客製化內容腳本與月度規劃，幫你更穩定發文、建立影響力，不再每週從零開始想內容。</p>
    <p class="hero-trial-note"><span>🎁 7 天免費試用：每天早上 8:00 自動送達 ｜ 正式訂閱後每週一寄送</span></p>
-   <a href="https://forms.gle/i6vvD7tGzcah3ZYw5" class="hero-cta">立即開始 7 天免費試用 →</a>
+   <a href="https://forms.gle/jGrGTmEKTqS6zU7i9" class="hero-cta">立即開始 7 天免費試用 →</a>
    <div class="hero-stats">
     <div class="hero-stat"><h3 id="stat-users">80+</h3><p>訂閱用戶</p></div>
     <div class="hero-stat"><h3>3個/週</h3><p>產業趨勢分析</p></div>
@@ -739,7 +739,7 @@ footer a { color: var(--accent); text-decoration: none; }
     <div class="section-label">Newsletter</div>
     <h3 class="section-title" style="font-size:24px;">📡 Weekly Signal</h3>
     <p style="color:var(--text-secondary);font-size:14px;">每週一封，分享 AI 工作流、內容系統、品牌成長觀察，還有我真正在用的方法與判斷。<br>不是工具整理，而是寫給想把內容做得更聰明的你。</p>
-    <div class="newsletter-form"><input type="email" class="newsletter-input" placeholder="你的 Email" id="newsletter-email"><button class="newsletter-btn" onclick="subscribeNewsletter()">即將開放</button></div>
+    <div class="newsletter-form"><input type="email" class="newsletter-input" placeholder="你的 Email" id="newsletter-email"><button class="newsletter-btn" onclick="subscribeNewsletter()">立即訂閱</button></div>
     <p style="color:var(--text-muted);font-size:12px;margin-top:12px;">已有 <span id="sub-count">80</span> 人訂閱 · 隨時可退訂</p>
    </div>
   </div>
@@ -770,7 +770,7 @@ footer a { color: var(--accent); text-decoration: none; }
   <p style="color:var(--text-secondary);font-size:16px;margin-bottom:8px;">只要 3 分鐘填寫你的專業資料，明天早上 8:00，你就會收到第一份專屬內容包。</p>
   <p style="color:var(--text-secondary);font-size:16px;margin-bottom:8px;">不是更多資訊，而是一套能幫你穩定輸出、持續累積的內容系統。</p>
   <p style="color:var(--cyan);font-size:14px;margin-bottom:32px;">🎁 試用期間體驗完整成長方案功能，免費開始，覺得適合再訂閱</p>
-  <a href="https://forms.gle/i6vvD7tGzcah3ZYw5" class="hero-cta">立即開始 7 天免費試用 →</a>
+  <a href="https://forms.gle/jGrGTmEKTqS6zU7i9" class="hero-cta">立即開始 7 天免費試用 →</a>
  </div>
 </section>
 
@@ -887,7 +887,15 @@ function showExample(id, btn) {
   btn.classList.add('active');
 }
 
-function subscribeNewsletter() { alert('Weekly Signal 訂閱入口即將開放 📡'); }
+function subscribeNewsletter() {
+  const email = document.getElementById('newsletter-email').value.trim();
+  const base = 'http://eepurl.com/jA5DSA';
+  if (email) {
+    window.open(base + '&EMAIL=' + encodeURIComponent(email), '_blank');
+  } else {
+    window.open(base, '_blank');
+  }
+}
 
 const SUBSCRIBER_SCRIPT_URL = 'YOUR_GOOGLE_APPS_SCRIPT_URL';
 async function fetchSubscriberCount() {
