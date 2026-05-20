@@ -782,12 +782,12 @@ footer a { color: var(--accent); text-decoration: none; }
 </footer>
 
 <script>
-// ── 綠界 ECPay 付款連結 ──
+// ── Gumroad 付款連結 ──
 const ECPAY_LINKS = {
-  starter_monthly: 'https://p.ecpay.com.tw/2514C74',
-  starter_annual:  'https://p.ecpay.com.tw/C23D3DB',
-  growth_monthly:  'https://p.ecpay.com.tw/5E1BA88',
-  growth_annual:   'https://p.ecpay.com.tw/49DEF98',
+  starter_monthly: 'https://weimichen.gumroad.com/l/starter',
+  starter_annual:  'https://weimichen.gumroad.com/l/acmxis',
+  growth_monthly:  'https://weimichen.gumroad.com/l/grow',
+  growth_annual:   'https://weimichen.gumroad.com/l/vbvqky',
   vip:             'https://lin.ee/QjF2cDk',
 };
 
@@ -826,12 +826,10 @@ function toggleBilling() {
     noteEl.style.opacity = isAnnual ? '1' : '0';
   });
 
-  // 同步更新按鈕文字
   updateBtnLabels();
 }
 
 function updateBtnLabels() {
-  const mode = isAnnual ? 'annual' : 'monthly';
   const labels = {
     starter: isAnnual ? '年繳 NT$6,990 開始訂閱' : '月繳 NT$699 開始訂閱',
     growth:  isAnnual ? '年繳 NT$11,990 開始訂閱' : '月繳 NT$1,199 開始訂閱',
@@ -844,10 +842,9 @@ function updateBtnLabels() {
   }
 }
 
-// ── 付款：直接跳轉綠界 Payment Link ──
+// ── 付款：直接跳轉 Gumroad ──
 function startCheckout(plan) {
   if (plan === 'vip') {
-    // VIP 導向 LINE@
     window.open(ECPAY_LINKS.vip, '_blank');
     return;
   }
@@ -861,7 +858,6 @@ function startCheckout(plan) {
     return;
   }
 
-  // 視覺 feedback
   const btn = document.getElementById(`btn-${plan}`);
   const originalText = btn.textContent;
   btn.innerHTML = '<span class="btn-loading"></span> 跳轉中...';
@@ -869,7 +865,6 @@ function startCheckout(plan) {
 
   setTimeout(() => {
     window.location.href = url;
-    // 還原按鈕（若用戶按返回）
     setTimeout(() => {
       btn.textContent = originalText;
       btn.disabled = false;
